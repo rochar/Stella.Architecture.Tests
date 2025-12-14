@@ -46,7 +46,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
     
     - name: Test
-      run: dotnet test --no-build --configuration Release -- --report-trx --report-trx-filename test-results.trx
+      run: dotnet test --no-build --configuration Release --results-directory ./artifacts/test-results -- --report-trx --report-trx-filename test-results.trx
 
     - name: Pack
       run: dotnet pack --no-build --configuration Release --output ./artifacts
@@ -63,12 +63,12 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: "**/TestResults/*.trx" 
+        path: ./artifacts/test-results/*.trx
         
     - name: Publish test results to GitHub
       uses: dorny/test-reporter@v1
       if: always()
       with:
           name: Tests
-          path: "**/TestResults/*.trx"
+          path: ./artifacts/test-results/*.trx
           reporter: dotnet-trx
