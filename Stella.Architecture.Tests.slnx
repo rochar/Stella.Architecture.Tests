@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Stella.Architecture.Tests.Tests/Stella.Architecture.Tests.Tests.csproj" />
+  <Project Path="Stella.Architecture.Tests/Stella.Architecture.Tests.csproj" />
+</Solution>
