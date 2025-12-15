@@ -7,6 +7,14 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  actions: write
+  id-token: write  
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -62,12 +70,12 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-results
-        path: ./artifacts/*.trx        
+        path: ./artifacts/*.trx 
 
     - name: Publish test results to GitHub
       uses: dorny/test-reporter@v1
       if: always()
       with:
-          name: test-results
-          path: artifacts/*.trx
+          name: test-publish
+          path: ./artifacts/*.trx 
           reporter: dotnet-trx
