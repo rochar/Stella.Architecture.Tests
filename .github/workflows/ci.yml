@@ -79,3 +79,9 @@ jobs:
           name: test-publish
           path: ./artifacts/*.trx 
           reporter: dotnet-trx
+
+          # && github.ref == 'refs/heads/main'
+  publish:
+    needs: build    
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
