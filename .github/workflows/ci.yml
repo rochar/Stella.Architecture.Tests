@@ -58,8 +58,16 @@ jobs:
         path: ./artifacts/*.nupkg
         retention-days: 2
     
-    - name: Upload Artifacts
+    - name: Upload Test Results
       uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: ./artifacts/*.trx        
+
+    - name: Publish test results to GitHub
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+          name: test-results
+          path: artifacts/*.trx
+          reporter: dotnet-trx
