@@ -68,6 +68,6 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-          name: test-results
-          path: test-results/**/*.trx
+          name: Tests
+          path: artifacts/test-results/**/*.trx
           reporter: dotnet-trx
