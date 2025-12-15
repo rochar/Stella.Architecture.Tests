@@ -69,5 +69,5 @@ jobs:
       if: always()
       with:
           name: Tests
-          path: artifacts/test-results/**/*.trx
+          path: artifacts/test-results/*.trx
           reporter: dotnet-trx
