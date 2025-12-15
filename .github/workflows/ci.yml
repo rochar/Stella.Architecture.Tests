@@ -7,6 +7,14 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  actions: write
+  id-token: write  
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
