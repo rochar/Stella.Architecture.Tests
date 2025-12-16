@@ -22,6 +22,18 @@ public class AssemblyArchitectureBuilder
     }
 
     /// <summary>
+    /// Isolated Namespace without Inbound or Outbound dependencies
+    /// </summary>
+    /// <param name="namespaceName"></param>
+    /// <returns></returns>
+    public AssemblyArchitectureBuilder WithIsolatedNamespace(string namespaceName)
+    {
+        WithNoInboundDependenciesInNamespace(namespaceName);
+        WithNoOutboundDependenciesInNamespace(namespaceName);
+        return this;
+    }
+
+    /// <summary>
     /// All Types outside the Namespace should not depend on types inside the Namespace, in the same assembly
     /// </summary>
     /// <param name="namespaceName"></param>
@@ -40,12 +52,6 @@ public class AssemblyArchitectureBuilder
     public AssemblyArchitectureBuilder WithNoOutboundDependenciesInNamespace(string namespaceName)
     {
         _noExternalDependenciesNamespaces.Add(namespaceName);
-        return this;
-    }
-
-    public AssemblyArchitectureBuilder WithNoExternalDependenciesInNamespaces(params string[] namespaceNames)
-    {
-        _noExternalDependenciesNamespaces.AddRange(namespaceNames);
         return this;
     }
 
