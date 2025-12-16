@@ -22,6 +22,9 @@
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="xunit.v3" Version="1.1.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stella.Architecture.Tests\Stella.Architecture.Tests.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />

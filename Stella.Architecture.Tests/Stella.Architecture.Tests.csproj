@@ -7,10 +7,18 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
     <Authors>Stella.Apps</Authors>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<!-- <AnalysisMode>All</AnalysisMode> -->
 		<AnalysisMode>Recommended</AnalysisMode>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 </Project>
