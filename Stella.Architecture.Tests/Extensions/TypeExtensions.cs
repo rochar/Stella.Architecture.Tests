@@ -1,4 +1,6 @@
-﻿namespace Stella.Architecture.Tests;
+﻿using Stella.Architecture.Tests.Exceptions;
+
+namespace Stella.Architecture.Tests.Extensions;
 
 public static class TypeExtensions
 {

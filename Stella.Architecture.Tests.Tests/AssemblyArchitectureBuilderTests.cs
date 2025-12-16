@@ -1,4 +1,5 @@
 ﻿using Shouldly;
+using Stella.Architecture.Tests.Exceptions;
 using Stella.Architecture.Tests.Tests.App.Salmon;
 using Stella.Architecture.Tests.Tests.App.Tuna;
 using Stella.Architecture.Tests.Tests.App.Tuna.Atlantic;

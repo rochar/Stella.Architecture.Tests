@@ -1,4 +1,4 @@
-﻿namespace Stella.Architecture.Tests;
+﻿namespace Stella.Architecture.Tests.Exceptions;
 
 [Serializable]
 public class AssertArchitectureException(string message, params Exception[] assertArchitectureExceptions) : Exception(message)

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Stella.Architecture.Tests.Exceptions;
+using System.Reflection;
 
 namespace Stella.Architecture.Tests;
 

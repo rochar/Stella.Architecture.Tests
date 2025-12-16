@@ -1,7 +1,9 @@
 ﻿using Shouldly;
+using Stella.Architecture.Tests.Exceptions;
+using Stella.Architecture.Tests.Extensions;
 using Stella.Architecture.Tests.Tests.App;
 
-namespace Stella.Architecture.Tests.Tests;
+namespace Stella.Architecture.Tests.Tests.Extensions;
 
 public class MethodInfoExtensionsTests
 {
