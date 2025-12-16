@@ -7,6 +7,11 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
     <Authors>Stella.Apps</Authors>
+    <Copyright>Copyright © 2025 Stella.Apps</Copyright>
+    <Description>A lightweight .NET library for writing architecture tests: verify layering, dependencies, naming conventions, and modular boundaries with a simple fluent API and extensions methods.</Description>
+    <PackageTags>architecture;testing;layering;dependencies;conventions;fluent-api;netstandard</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -20,5 +25,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

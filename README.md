@@ -1,2 +1,2 @@
-# Stella.Net.Architecture.Tests
-A lightweight .NET NuGet package for writing architecture tests in C#: verify layering, dependencies, naming conventions, and modular boundaries with a simple fluent API.
+# Stella.Architecture.Tests
+A lightweight .NET library for writing architecture tests: verify layering, dependencies, naming conventions, and modular boundaries with a simple fluent API and extensions methods.
