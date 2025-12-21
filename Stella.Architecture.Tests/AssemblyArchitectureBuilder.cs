@@ -6,9 +6,8 @@ namespace Stella.Architecture.Tests;
 public class AssemblyArchitectureBuilder
 {
     private readonly Assembly _assembly;
-    private readonly Dictionary<Type, HashSet<Type>> _typeDependencies = [];
-    private readonly List<string> _noExternalDependenciesNamespaces = [];
-    private readonly List<string> _isolatedNamespaces = [];
+    private readonly HashSet<string> _noExternalDependenciesNamespaces = [];
+    private readonly HashSet<string> _isolatedNamespaces = [];
 
 
     private AssemblyArchitectureBuilder(Assembly assembly)
@@ -93,7 +92,7 @@ public class AssemblyArchitectureBuilder
         string isolatedNamespace)
     {
         var exceptions = new List<AssertInvalidDependencyException>();
-        var referencedTypes = GetReferencedTypes(type);
+        var referencedTypes = TypeDependenciesCache.GetInternalReferenceTypes(type);
 
         foreach (var referencedType in referencedTypes)
         {
@@ -143,7 +142,7 @@ public class AssemblyArchitectureBuilder
         string isolatedNamespace)
     {
         var exceptions = new List<AssertInvalidDependencyException>();
-        var referencedTypes = GetReferencedTypes(type);
+        var referencedTypes = TypeDependenciesCache.GetInternalReferenceTypes(type);
 
         foreach (var referencedType in referencedTypes)
         {
@@ -166,53 +165,5 @@ public class AssemblyArchitectureBuilder
         }
 
         return exceptions;
-    }
-
-    private HashSet<Type> GetReferencedTypes(Type type)
-    {
-        if (_typeDependencies.TryGetValue(type, out var result))
-        {
-            return result;
-        }
-        var referencedTypes = new HashSet<Type>();
-
-        if (type is { BaseType: not null } && type.BaseType != typeof(object) && type.BaseType.Assembly == _assembly)
-            referencedTypes.Add(type.BaseType);
-
-        foreach (var @interface in type.GetInterfaces())
-            if (@interface.Assembly == _assembly)
-                referencedTypes.Add(@interface);
-
-        foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
-                                             BindingFlags.Static))
-            if (field.FieldType.Assembly == _assembly)
-                referencedTypes.Add(field.FieldType);
-
-        foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic |
-                                                    BindingFlags.Instance | BindingFlags.Static))
-            if (property.PropertyType.Assembly == _assembly)
-                referencedTypes.Add(property.PropertyType);
-
-        foreach (var constructor in type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic |
-                                                         BindingFlags.Instance | BindingFlags.Static))
-            foreach (var parameter in constructor.GetParameters())
-                if (parameter.ParameterType.Assembly == _assembly)
-                    referencedTypes.Add(parameter.ParameterType);
-
-        foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
-                                               BindingFlags.Static | BindingFlags.DeclaredOnly))
-        {
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (method.ReturnType != null && method.ReturnType.Assembly == _assembly)
-                referencedTypes.Add(method.ReturnType);
-
-            foreach (var parameter in method.GetParameters())
-                if (parameter.ParameterType.Assembly == _assembly)
-                    referencedTypes.Add(parameter.ParameterType);
-        }
-
-        _typeDependencies.TryAdd(type, referencedTypes);
-
-        return referencedTypes;
     }
 }
