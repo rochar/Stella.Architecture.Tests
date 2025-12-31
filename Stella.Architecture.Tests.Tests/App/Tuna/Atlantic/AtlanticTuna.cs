@@ -1,6 +1,6 @@
 ﻿namespace Stella.Architecture.Tests.Tests.App.Tuna.Atlantic
 {
-    internal class AtlanticTuna
+    internal sealed class AtlanticTuna
     {
         public Salmon.Salmon Salmon { get; } = new();
 

@@ -2,8 +2,9 @@
 
 namespace Stella.Architecture.Tests.Tests.App.Sardine
 {
-    internal class Sardine(AtlanticSardine atlanticSardine)
+    internal sealed class Sardine(AtlanticSardine atlanticSardine)
     {
+        // ReSharper disable once UnusedMember.Local
         private readonly AtlanticSardine _atlanticSardine = atlanticSardine;
     }
 }

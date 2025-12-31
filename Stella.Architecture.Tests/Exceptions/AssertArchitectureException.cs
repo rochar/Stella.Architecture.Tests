@@ -1,7 +1,7 @@
 ﻿namespace Stella.Architecture.Tests.Exceptions;
 
 [Serializable]
-public class AssertArchitectureException(string message, params AssertInvalidDependencyException[] assertArchitectureExceptions) : Exception(message)
+public class AssertArchitectureException(string message, params AssertInvalidDependencyException[] assertInvalidDependencyExceptions) : Exception(message)
 {
-    public Exception[] AssertArchitectureExceptions { get; } = assertArchitectureExceptions;
+    public AssertInvalidDependencyException[] AssertInvalidDependencyExceptions { get; } = assertInvalidDependencyExceptions;
 }

@@ -12,7 +12,7 @@ public class MethodInfoExtensionsTests
     public void ShouldHaveAttributePassesWhenMethodHasAttribute()
     {
         var method = typeof(AClass).GetMethod(nameof(AClass.MethodWithObsoleteAttribute));
-        method.ShouldHaveAttribute(typeof(ObsoleteAttribute));
+        method!.ShouldHaveAttribute(typeof(ObsoleteAttribute));
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class MethodInfoExtensionsTests
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
             var method = typeof(AClass).GetMethod(nameof(AClass.MethodWithoutAttributes));
-            method.ShouldHaveAttribute(typeof(ObsoleteAttribute));
+            method!.ShouldHaveAttribute(typeof(ObsoleteAttribute));
         });
         exception.Message.ShouldBe("Method MethodWithoutAttributes expected to have attribute System.ObsoleteAttribute");
     }

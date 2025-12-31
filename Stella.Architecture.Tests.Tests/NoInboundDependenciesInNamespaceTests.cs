@@ -18,11 +18,11 @@ public class NoInboundDependenciesInNamespaceTests
                 .ShouldBeValid();
         });
 
-        var exceptions = exception.AssertArchitectureExceptions.OfType<AssertInvalidDependencyException>().ToArray();
 
-        exceptions.Length.ShouldBe(1);
+        exception.AssertInvalidDependencyExceptions.Length.ShouldBe(1);
 
-        exceptions.ShouldContain(e => e.CurrentType == typeof(DependsOnTuna) && e.ReferencedType == typeof(Tuna));
+        exception.AssertInvalidDependencyExceptions.ShouldContain(e =>
+            e.CurrentType == typeof(DependsOnTuna) && e.ReferencedType == typeof(Tuna));
     }
 
     [Fact]

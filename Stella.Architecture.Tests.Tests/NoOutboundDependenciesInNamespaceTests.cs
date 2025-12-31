@@ -19,14 +19,13 @@ public class NoOutboundDependenciesInNamespaceTests
                 .ShouldBeValid();
         });
 
-        var exceptions = exception.AssertArchitectureExceptions.OfType<AssertInvalidDependencyException>().ToArray();
 
-        exceptions.Length.ShouldBe(4);
+        exception.AssertInvalidDependencyExceptions.Length.ShouldBe(4);
 
-        exceptions.ShouldContain(e => e.CurrentType == typeof(Tuna) && e.ReferencedType == typeof(Salmon));
-        exceptions.ShouldContain(e => e.CurrentType == typeof(TunaField) && e.ReferencedType == typeof(Salmon));
-        exceptions.ShouldContain(e => e.CurrentType == typeof(TunaProperty) && e.ReferencedType == typeof(Salmon));
-        exceptions.ShouldContain(e => e.CurrentType == typeof(AtlanticTuna) && e.ReferencedType == typeof(Salmon));
+        exception.AssertInvalidDependencyExceptions.ShouldContain(e => e.CurrentType == typeof(Tuna) && e.ReferencedType == typeof(Salmon));
+        exception.AssertInvalidDependencyExceptions.ShouldContain(e => e.CurrentType == typeof(TunaField) && e.ReferencedType == typeof(Salmon));
+        exception.AssertInvalidDependencyExceptions.ShouldContain(e => e.CurrentType == typeof(TunaProperty) && e.ReferencedType == typeof(Salmon));
+        exception.AssertInvalidDependencyExceptions.ShouldContain(e => e.CurrentType == typeof(AtlanticTuna) && e.ReferencedType == typeof(Salmon));
     }
 
     [Fact]
