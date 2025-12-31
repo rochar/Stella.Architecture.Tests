@@ -8,12 +8,16 @@ internal static class TypeDependenciesCache
     private sealed record References(ImmutableHashSet<Type> Internal, ImmutableHashSet<Type> External);
     private static readonly Dictionary<Type, References> _typeDependencies = [];
 
-    public static ImmutableHashSet<Type> GetInternalReferenceTypes(Type type)
+    internal static ImmutableHashSet<Type> GetInternalReferenceTypes(Type type)
     {
         EnsureTypeDependencies(type);
         return _typeDependencies[type].Internal;
     }
-
+    internal static ImmutableHashSet<Type> GetExternalReferenceTypes(Type type)
+    {
+        EnsureTypeDependencies(type);
+        return _typeDependencies[type].External;
+    }
     private static void EnsureTypeDependencies(Type type)
     {
         if (_typeDependencies.ContainsKey(type))
