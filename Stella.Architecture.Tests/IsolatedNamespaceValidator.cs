@@ -17,12 +17,12 @@ internal class IsolatedNamespaceValidator
         _noOutboundDependenciesInNamespace.Add(ns);
     }
 
-    public IEnumerable<AssertInvalidDependencyException> ShouldBeValid(Type[] allTypes)
+    public IEnumerable<AssertTypeDependencyException> ShouldBeValid(Type[] allTypes)
     {
         return ShouldNotHaveInBoundDependencies(allTypes).Concat(ShouldNotHaveOutBoundDependencies(allTypes));
     }
 
-    public IEnumerable<AssertInvalidDependencyException> ShouldNotHaveInBoundDependencies(Type[] allTypes)
+    public IEnumerable<AssertTypeDependencyException> ShouldNotHaveInBoundDependencies(Type[] allTypes)
     {
         foreach (var isolatedNamespace in _noInboundDependenciesInNamespace)
         {
@@ -43,10 +43,10 @@ internal class IsolatedNamespaceValidator
         }
     }
 
-    private List<AssertInvalidDependencyException> ShouldNotHaveInBoundDependencies(Type type,
+    private List<AssertTypeDependencyException> ShouldNotHaveInBoundDependencies(Type type,
         string isolatedNamespace)
     {
-        var exceptions = new List<AssertInvalidDependencyException>();
+        var exceptions = new List<AssertTypeDependencyException>();
         var referencedTypes = TypeDependenciesCache.GetInternalReferenceTypes(type);
 
         foreach (var referencedType in referencedTypes)
@@ -59,7 +59,7 @@ internal class IsolatedNamespaceValidator
 
             if (isInSameIsolatedNamespace)
             {
-                exceptions.Add(new AssertInvalidDependencyException(
+                exceptions.Add(new AssertTypeDependencyException(
                     $"Type '{type.FullName}' depends on isolated namespace '{isolatedNamespace}' " +
                     $"references type '{referencedType.FullName}' from isolated namespace '{referencedType.Namespace}'",
                     type, referencedType));
@@ -72,7 +72,7 @@ internal class IsolatedNamespaceValidator
         return exceptions;
     }
 
-    public IEnumerable<AssertInvalidDependencyException> ShouldNotHaveOutBoundDependencies(Type[] allTypes)
+    public IEnumerable<AssertTypeDependencyException> ShouldNotHaveOutBoundDependencies(Type[] allTypes)
     {
         foreach (var isolatedNamespace in _noOutboundDependenciesInNamespace)
         {
@@ -94,10 +94,10 @@ internal class IsolatedNamespaceValidator
         }
     }
 
-    private List<AssertInvalidDependencyException> ShouldNotDependOnComponentsOutsideNamespace(Type type,
+    private List<AssertTypeDependencyException> ShouldNotDependOnComponentsOutsideNamespace(Type type,
         string isolatedNamespace)
     {
-        var exceptions = new List<AssertInvalidDependencyException>();
+        var exceptions = new List<AssertTypeDependencyException>();
         var referencedTypes = TypeDependenciesCache.GetInternalReferenceTypes(type);
 
         foreach (var referencedType in referencedTypes)
@@ -110,7 +110,7 @@ internal class IsolatedNamespaceValidator
 
             if (!isInSameIsolatedNamespace)
             {
-                exceptions.Add(new AssertInvalidDependencyException(
+                exceptions.Add(new AssertTypeDependencyException(
                     $"Type '{type.FullName}' in isolated namespace '{isolatedNamespace}' " +
                     $"references type '{referencedType.FullName}' from outside namespace '{referencedType.Namespace}'",
                     type, referencedType));

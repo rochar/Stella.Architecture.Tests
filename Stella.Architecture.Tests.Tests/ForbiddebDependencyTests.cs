@@ -14,20 +14,20 @@ public class ForbiddenDependencyTests
     var exception = Should.Throw<AssertArchitectureException>(() =>
     {
       AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-        .WithForbiddenDependency("Newtonsoft")
+        .WithForbiddenAssemblyDependency("Newtonsoft")
         .ShouldBeValid();
     });
 
-    exception.AssertInvalidDependencyExceptions.Length.ShouldBe(1);
-    exception.AssertInvalidDependencyExceptions.First().CurrentType.ShouldBe(typeof(AForbiddenDependencyClass));
-    exception.AssertInvalidDependencyExceptions.First().ReferencedType.ShouldBe(typeof(Newtonsoft.Json.JsonSerializer));
+     exception.AssertExceptions.Length.ShouldBe(1);
+    var dependencyException = exception.AssertExceptions.OfType<AssertAssembyDependencyException>().Single();
+    dependencyException.ReferencedAssembly.FullName.ShouldStartWith("Newtonsoft");
   }
 
   [Fact]
   public void ShouldBeValidWhenForbiddenDependencyExistsNotFound()
   {
     AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-      .WithForbiddenDependency("DummyDependency")
+      .WithForbiddenAssemblyDependency("DummyDependency")
       .ShouldBeValid();
   }
 }

@@ -19,9 +19,9 @@ public class NoInboundDependenciesInNamespaceTests
         });
 
 
-        exception.AssertInvalidDependencyExceptions.Length.ShouldBe(1);
+        exception.AssertExceptions.Length.ShouldBe(1);
 
-        exception.AssertInvalidDependencyExceptions.ShouldContain(e =>
+        exception.AssertExceptions.OfType<AssertTypeDependencyException>().ShouldContain(e =>
             e.CurrentType == typeof(DependsOnTuna) && e.ReferencedType == typeof(Tuna));
     }
 

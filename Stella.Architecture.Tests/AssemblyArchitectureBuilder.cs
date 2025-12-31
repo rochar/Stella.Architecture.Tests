@@ -6,7 +6,7 @@ namespace Stella.Architecture.Tests;
 public sealed class AssemblyArchitectureBuilder
 {
     private readonly Assembly _assembly;
-    private readonly List<System.Text.RegularExpressions.Regex> _forbiddenDependenciesRegularExpression = [];
+    private readonly List<System.Text.RegularExpressions.Regex> _forbiddenAssemblyDependencyRegularExpressions = [];
     private readonly IsolatedNamespaceValidator _isolatedNamespaceValidator;
 
     private AssemblyArchitectureBuilder(Assembly assembly)
@@ -21,14 +21,15 @@ public sealed class AssemblyArchitectureBuilder
     }
 
     /// <summary>
-    /// Forbidden Dependency
+    /// Invalid if Assembly depends on any Assembly that the Full Name matches the regular expression
     /// </summary>
-    /// <param name="regularExpression">regular expression applied to depency type full name </param>
+    /// <param name="regularExpression">regular expression applied to dependant Assembly full name </param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithForbiddenDependency(string regularExpression)
+    public AssemblyArchitectureBuilder WithForbiddenAssemblyDependency(string regularExpression)
     {
-        var regExpression = new System.Text.RegularExpressions.Regex(regularExpression, System.Text.RegularExpressions.RegexOptions.Compiled);
-        _forbiddenDependenciesRegularExpression.Add(regExpression);
+        var regExpression = new System.Text.RegularExpressions.Regex(regularExpression,
+            System.Text.RegularExpressions.RegexOptions.Compiled);
+        _forbiddenAssemblyDependencyRegularExpressions.Add(regExpression);
         return this;
     }
 
@@ -69,40 +70,25 @@ public sealed class AssemblyArchitectureBuilder
 
     public void ShouldBeValid()
     {
-        var exceptions = new List<AssertInvalidDependencyException>(15);
+        var exceptions = new List<Exception>(15);
 
         var allTypes = _assembly.GetTypes();
 
         exceptions.AddRange(_isolatedNamespaceValidator.ShouldBeValid(allTypes));
-        exceptions.AddRange(ShouldNotDependOnForbiddenDependencies(allTypes));
+        exceptions.AddRange(ShouldNotDependOnForbiddenAssemblies());
+
 
         if (exceptions.Any())
             throw new AssertArchitectureException("Invalid Architecture", exceptions.ToArray());
     }
 
-    private IEnumerable<AssertInvalidDependencyException> ShouldNotDependOnForbiddenDependencies(Type[] allTypes)
+    private IEnumerable<AssertAssembyDependencyException> ShouldNotDependOnForbiddenAssemblies()
     {
-        foreach (var type in allTypes)
-        {
-            var referencedTypes = TypeDependenciesCache.GetExternalReferenceTypes(type);
-            var exceptionsCount = 0;
+        if (!_forbiddenAssemblyDependencyRegularExpressions.Any())
+            return [];
 
-
-            foreach (var referencedType in referencedTypes)
-            {
-                var fullName = referencedType.FullName ?? referencedType.Name;
-                foreach (var regex in _forbiddenDependenciesRegularExpression)
-
-                    if (regex.IsMatch(fullName))
-                    {
-                        exceptionsCount++;
-                        yield return new AssertInvalidDependencyException(
-                            $"Type '{type.FullName}' depends on forbidden type '{fullName}' (matched by regex '{regex}')",
-                            type, referencedType);
-                        if (exceptionsCount > 3)
-                            yield break;
-                    }
-            }
-        }
+        return _assembly.GetReferencedAssemblies()
+            .Where(a => _forbiddenAssemblyDependencyRegularExpressions.Any(r => r.IsMatch(a.FullName ?? a.Name)))
+            .Select(a => new AssertAssembyDependencyException(a));
     }
 }
