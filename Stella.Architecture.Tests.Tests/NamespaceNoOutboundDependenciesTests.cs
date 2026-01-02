@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Stella.Architecture.Tests.Tests;
 
-public class NoOutboundDependenciesInNamespaceTests
+public class NamespaceNoOutboundDependenciesTests
 {
     [Fact]
     public void ShouldBeInvalidIsolatedNamespace()
@@ -15,7 +15,7 @@ public class NoOutboundDependenciesInNamespaceTests
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
             AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-                .WithNoOutboundDependenciesInNamespace("Stella.Architecture.Tests.Tests.App.Tuna")
+                .WithNamespaceNoOutboundDependencies("Stella.Architecture.Tests.Tests.App.Tuna")
                 .ShouldBeValid();
         });
 
@@ -36,7 +36,7 @@ public class NoOutboundDependenciesInNamespaceTests
     public void ShouldBeVaLidIsolatedNamespace()
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-            .WithNoOutboundDependenciesInNamespace("Stella.Architecture.Tests.Tests.App.Sardine")
+            .WithNamespaceNoOutboundDependencies("Stella.Architecture.Tests.Tests.App.Sardine")
             .ShouldBeValid();
     }
 }

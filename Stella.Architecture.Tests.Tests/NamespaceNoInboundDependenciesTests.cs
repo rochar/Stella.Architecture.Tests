@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Stella.Architecture.Tests.Tests;
 
-public class NoInboundDependenciesInNamespaceTests
+public class NamespaceNoInboundDependenciesTests
 {
     [Fact]
     public void ShouldBeInvalidInboundDependency()
@@ -14,7 +14,7 @@ public class NoInboundDependenciesInNamespaceTests
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
             AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-                .WithNoInboundDependenciesInNamespace("Stella.Architecture.Tests.Tests.App.Tuna")
+                .WithNamespaceNoInboundDependencies("Stella.Architecture.Tests.Tests.App.Tuna")
                 .ShouldBeValid();
         });
 
@@ -29,7 +29,7 @@ public class NoInboundDependenciesInNamespaceTests
     public void ShouldNotHaveInboundDependency()
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-            .WithNoInboundDependenciesInNamespace("Stella.Architecture.Tests.Tests.App.Sardine")
+            .WithNamespaceNoInboundDependencies("Stella.Architecture.Tests.Tests.App.Sardine")
             .ShouldBeValid();
     }
 }

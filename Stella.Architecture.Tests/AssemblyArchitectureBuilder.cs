@@ -6,13 +6,13 @@ namespace Stella.Architecture.Tests;
 public sealed class AssemblyArchitectureBuilder
 {
     private readonly Assembly _assembly;
-    private readonly List<System.Text.RegularExpressions.Regex> _forbiddenAssemblyDependencyRegularExpressions = [];
-    private readonly IsolatedNamespaceValidator _isolatedNamespaceValidator;
+    private readonly NamespaceValidator _namespaceValidator = new();
+    private readonly AssemblyValidator _assemblyValidator = new();
+
 
     private AssemblyArchitectureBuilder(Assembly assembly)
     {
         _assembly = assembly;
-        _isolatedNamespaceValidator = new IsolatedNamespaceValidator();
     }
 
     public static AssemblyArchitectureBuilder ForAssembly(Assembly assembly)
@@ -25,11 +25,9 @@ public sealed class AssemblyArchitectureBuilder
     /// </summary>
     /// <param name="regularExpression">regular expression applied to dependant Assembly full name </param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithForbiddenAssemblyDependency(string regularExpression)
+    public AssemblyArchitectureBuilder WithAssemblyForbiddenDependency(string regularExpression)
     {
-        var regExpression = new System.Text.RegularExpressions.Regex(regularExpression,
-            System.Text.RegularExpressions.RegexOptions.Compiled);
-        _forbiddenAssemblyDependencyRegularExpressions.Add(regExpression);
+        _assemblyValidator.WithAssemblyForbiddenDependency(regularExpression);
         return this;
     }
 
@@ -38,10 +36,10 @@ public sealed class AssemblyArchitectureBuilder
     /// </summary>
     /// <param name="namespaceName"></param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithIsolatedNamespace(string namespaceName)
+    public AssemblyArchitectureBuilder WithNamespaceIsolated(string namespaceName)
     {
-        _isolatedNamespaceValidator.WithNoInboundDependenciesInNamespace(namespaceName);
-        _isolatedNamespaceValidator.WithNoOutboundDependenciesInNamespace(namespaceName);
+        _namespaceValidator.WithNamespaceNoInboundDependencies(namespaceName);
+        _namespaceValidator.WithNamespaceNoOutboundDependencies(namespaceName);
 
         return this;
     }
@@ -51,9 +49,9 @@ public sealed class AssemblyArchitectureBuilder
     /// </summary>
     /// <param name="namespaceName"></param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithNoInboundDependenciesInNamespace(string namespaceName)
+    public AssemblyArchitectureBuilder WithNamespaceNoInboundDependencies(string namespaceName)
     {
-        _isolatedNamespaceValidator.WithNoInboundDependenciesInNamespace(namespaceName);
+        _namespaceValidator.WithNamespaceNoInboundDependencies(namespaceName);
         return this;
     }
 
@@ -62,9 +60,9 @@ public sealed class AssemblyArchitectureBuilder
     /// </summary>
     /// <param name="namespaceName">Validation will be from Namespace to "child namespaces" </param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithNoOutboundDependenciesInNamespace(string namespaceName)
+    public AssemblyArchitectureBuilder WithNamespaceNoOutboundDependencies(string namespaceName)
     {
-        _isolatedNamespaceValidator.WithNoOutboundDependenciesInNamespace(namespaceName);
+        _namespaceValidator.WithNamespaceNoOutboundDependencies(namespaceName);
         return this;
     }
 
@@ -74,21 +72,13 @@ public sealed class AssemblyArchitectureBuilder
 
         var allTypes = _assembly.GetTypes();
 
-        exceptions.AddRange(_isolatedNamespaceValidator.ShouldBeValid(allTypes));
-        exceptions.AddRange(ShouldNotDependOnForbiddenAssemblies());
+        exceptions.AddRange(_namespaceValidator.ShouldBeValid(allTypes));
+        exceptions.AddRange(_assemblyValidator.ShouldBeValid(_assembly));
 
 
         if (exceptions.Any())
             throw new AssertArchitectureException("Invalid Architecture", exceptions.ToArray());
     }
 
-    private IEnumerable<AssertAssembyDependencyException> ShouldNotDependOnForbiddenAssemblies()
-    {
-        if (!_forbiddenAssemblyDependencyRegularExpressions.Any())
-            return [];
 
-        return _assembly.GetReferencedAssemblies()
-            .Where(a => _forbiddenAssemblyDependencyRegularExpressions.Any(r => r.IsMatch(a.FullName ?? a.Name)))
-            .Select(a => new AssertAssembyDependencyException(a));
-    }
 }

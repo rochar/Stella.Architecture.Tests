@@ -2,17 +2,17 @@ using Stella.Architecture.Tests.Exceptions;
 
 namespace Stella.Architecture.Tests;
 
-internal class IsolatedNamespaceValidator
+internal class NamespaceValidator
 {
     private readonly HashSet<string> _noInboundDependenciesInNamespace = new();
     private readonly HashSet<string> _noOutboundDependenciesInNamespace = new();
 
-    public void WithNoInboundDependenciesInNamespace(string ns)
+    public void WithNamespaceNoInboundDependencies(string ns)
     {
         _noInboundDependenciesInNamespace.Add(ns);
     }
 
-    public void WithNoOutboundDependenciesInNamespace(string ns)
+    public void WithNamespaceNoOutboundDependencies(string ns)
     {
         _noOutboundDependenciesInNamespace.Add(ns);
     }
@@ -33,13 +33,13 @@ internal class IsolatedNamespaceValidator
 
             var exceptionsCount = 0;
             foreach (var type in typesOutsideNamespace)
-            foreach (var exception in ShouldNotHaveInBoundDependencies(type, isolatedNamespace))
-            {
-                yield return exception;
-                exceptionsCount++;
-                if (exceptionsCount > 15)
-                    break;
-            }
+                foreach (var exception in ShouldNotHaveInBoundDependencies(type, isolatedNamespace))
+                {
+                    yield return exception;
+                    exceptionsCount++;
+                    if (exceptionsCount > 15)
+                        break;
+                }
         }
     }
 
@@ -84,13 +84,13 @@ internal class IsolatedNamespaceValidator
 
             var exceptionsCount = 0;
             foreach (var type in typesInNamespace)
-            foreach (var exception in ShouldNotDependOnComponentsOutsideNamespace(type, isolatedNamespace))
-            {
-                yield return exception;
-                exceptionsCount++;
-                if (exceptionsCount > 15)
-                    break;
-            }
+                foreach (var exception in ShouldNotDependOnComponentsOutsideNamespace(type, isolatedNamespace))
+                {
+                    yield return exception;
+                    exceptionsCount++;
+                    if (exceptionsCount > 15)
+                        break;
+                }
         }
     }
 
