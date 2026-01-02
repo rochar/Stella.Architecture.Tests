@@ -14,7 +14,7 @@ public class TypeExtensionsTests
     [Fact]
     public void ShouldBeRecordFailsWhenClass()
     {
-        var exception = Should.Throw<AssertArchitectureException>(() =>
+        var exception = Should.Throw<AssertTypeInvalidException>(() =>
         {
             typeof(AClass).ShouldBeRecord();
         });

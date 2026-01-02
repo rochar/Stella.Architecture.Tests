@@ -8,6 +8,7 @@ public sealed class AssemblyArchitectureBuilder
     private readonly Assembly _assembly;
     private readonly NamespaceValidator _namespaceValidator = new();
     private readonly AssemblyValidator _assemblyValidator = new();
+    private readonly List<TypeArchitectureBuilder> _typeBuilders = [];
 
 
     private AssemblyArchitectureBuilder(Assembly assembly)
@@ -18,6 +19,22 @@ public sealed class AssemblyArchitectureBuilder
     public static AssemblyArchitectureBuilder ForAssembly(Assembly assembly)
     {
         return new AssemblyArchitectureBuilder(assembly);
+    }
+
+    /// <summary>
+    /// Validations for a specific Type in the Assembly
+    /// Applies to all types in the Assembly that match the Type according to Type.IsAssignableFrom
+    /// </summary>
+    public AssemblyArchitectureBuilder WithType<T>(Action<TypeArchitectureBuilder> configure)
+    {
+        return WithType(typeof(T), configure);
+    }
+    public AssemblyArchitectureBuilder WithType(Type type, Action<TypeArchitectureBuilder> configure)
+    {
+        var typeBuilder = TypeArchitectureBuilder.ForType(type);
+        configure(typeBuilder);
+        _typeBuilders.Add(typeBuilder);
+        return this;
     }
 
     /// <summary>
@@ -75,10 +92,12 @@ public sealed class AssemblyArchitectureBuilder
         exceptions.AddRange(_namespaceValidator.ShouldBeValid(allTypes));
         exceptions.AddRange(_assemblyValidator.ShouldBeValid(_assembly));
 
+        foreach (var typeArchitectureBuilder in _typeBuilders)
+        {
+            exceptions.AddRange(typeArchitectureBuilder.ShouldBeValid(allTypes));
+        }
 
         if (exceptions.Any())
             throw new AssertArchitectureException("Invalid Architecture", exceptions.ToArray());
     }
-
-
 }

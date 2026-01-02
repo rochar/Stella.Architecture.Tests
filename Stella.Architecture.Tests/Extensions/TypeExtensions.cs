@@ -15,7 +15,7 @@ public static class TypeExtensions
         public void ShouldBeRecord()
         {
             if (!type.IsRecord())
-                throw new AssertArchitectureException($"{type.FullName} expected to be a record");
+                throw new AssertTypeInvalidException($"{type.FullName} expected to be a record", type);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿namespace Stella.Architecture.Tests.Tests.App;
 
-public record ARecord
+public record ARecord : IShouldBeRecord
 {
 }
