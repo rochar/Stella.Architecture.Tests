@@ -59,7 +59,7 @@ public class ArchitectureTests
     }
 }
 ```
-This test ensures that types in the `MyApp.Domain` namespace (and its child namespaces) do not reference any types from other namespaces in the same assembly. For example:
+This test ensures that types in the `MyApp.Domain` namespace (and its child namespaces) do not reference any types from other namespaces in the same assembly.
 
 ## Usage Examples
 
@@ -131,6 +131,30 @@ public void ShouldNotBeRecords_WhenImplementingIEntity()
     AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IEntity>(builder => builder.IsNotRecord())
+        .ShouldBeValid();
+}
+```
+
+### Testing Restricted Type Dependencies
+
+Ensure that only specific types can depend on a target type:
+
+```csharp
+[Fact]
+public void ShouldOnlyBeUsedByServices_WhenDatabaseContext()
+{
+    AssemblyArchitectureBuilder
+        .ForAssembly(Assembly.Load("MyApp"))
+        .WithDependencyUsedOnly<DatabaseContext>(typeof(IService))
+        .ShouldBeValid();
+}
+
+[Fact]
+public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
+{
+    AssemblyArchitectureBuilder
+        .ForAssembly(Assembly.Load("MyApp"))
+        .WithDependencyUsedOnly<InternalApi>(typeof(Service1), typeof(Service2))
         .ShouldBeValid();
 }
 ```

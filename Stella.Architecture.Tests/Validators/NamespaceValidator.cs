@@ -1,11 +1,11 @@
 using Stella.Architecture.Tests.Exceptions;
 
-namespace Stella.Architecture.Tests;
+namespace Stella.Architecture.Tests.Validators;
 
 internal class NamespaceValidator
 {
-    private readonly HashSet<string> _noInboundDependenciesInNamespace = new();
-    private readonly HashSet<string> _noOutboundDependenciesInNamespace = new();
+    private readonly HashSet<string> _noInboundDependenciesInNamespace = [];
+    private readonly HashSet<string> _noOutboundDependenciesInNamespace = [];
 
     public void WithNamespaceNoInboundDependencies(string ns)
     {

@@ -1,7 +1,7 @@
 using Stella.Architecture.Tests.Exceptions;
 using System.Reflection;
 
-namespace Stella.Architecture.Tests;
+namespace Stella.Architecture.Tests.Validators;
 
 internal class AssemblyValidator
 {
