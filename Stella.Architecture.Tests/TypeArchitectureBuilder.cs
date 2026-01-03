@@ -6,7 +6,8 @@ namespace Stella.Architecture.Tests
     public sealed class TypeArchitectureBuilder
     {
         private readonly Type _type;
-        private bool? _isRecord = null;
+        private bool? _isRecord;
+        private string? _nameEndsWith;
 
         private TypeArchitectureBuilder(Type type)
         {
@@ -23,23 +24,47 @@ namespace Stella.Architecture.Tests
             _isRecord = true;
             return this;
         }
+
         public TypeArchitectureBuilder IsNotRecord()
         {
             _isRecord = false;
             return this;
         }
 
+        public TypeArchitectureBuilder WithNameEndsWith(string nameEndsWith)
+        {
+            _nameEndsWith = nameEndsWith;
+            return this;
+        }
+
         public IEnumerable<AssertTypeInvalidException> ShouldBeValid(Type[] allTypes)
         {
-            if (!_isRecord.HasValue) yield break;
-
             foreach (Type type in allTypes)
             {
-                if (type.IsInterface || !_type.IsAssignableFrom(type)) continue;
+                if (type.IsInterface || !_type.IsAssignableFrom(type))
+                    continue;
+                
+                if (_isRecord is not null)
+                {
+                    var recordException = ValidateRecord(type);
+                    if (recordException != null)
+                        yield return recordException;
+                }
 
-                if ((_isRecord.Value && !type.IsRecord()) || (!_isRecord.Value && type.IsRecord()))
-                    yield return new AssertTypeInvalidException($"{type.FullName} is Record {type.IsRecord()}", type);
+                if (_nameEndsWith is not null && !type.Name.EndsWith(_nameEndsWith))
+                    yield return new AssertTypeInvalidException(
+                        $"{type.FullName} Name does not ends with {_nameEndsWith}", type);
             }
+        }
+
+        private AssertTypeInvalidException? ValidateRecord(Type type)
+        {
+            if ((_isRecord!.Value && !type.IsRecord()) || (!_isRecord.Value && type.IsRecord()))
+            {
+                return new AssertTypeInvalidException($"{type.FullName} is Record {type.IsRecord()}", type);
+            }
+
+            return null;
         }
     }
 }

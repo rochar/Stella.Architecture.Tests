@@ -31,15 +31,11 @@ internal class NamespaceValidator
                             || (t.Namespace != isolatedNamespace && !t.Namespace.StartsWith(isolatedNamespace + ".")))
                 .ToList();
 
-            var exceptionsCount = 0;
             foreach (var type in typesOutsideNamespace)
-                foreach (var exception in ShouldNotHaveInBoundDependencies(type, isolatedNamespace))
-                {
-                    yield return exception;
-                    exceptionsCount++;
-                    if (exceptionsCount > 15)
-                        break;
-                }
+            foreach (var exception in ShouldNotHaveInBoundDependencies(type, isolatedNamespace))
+            {
+                yield return exception;
+            }
         }
     }
 
@@ -63,9 +59,6 @@ internal class NamespaceValidator
                     $"Type '{type.FullName}' depends on isolated namespace '{isolatedNamespace}' " +
                     $"references type '{referencedType.FullName}' from isolated namespace '{referencedType.Namespace}'",
                     type, referencedType));
-
-                if (exceptions.Count > 3)
-                    break;
             }
         }
 
@@ -82,15 +75,11 @@ internal class NamespaceValidator
                              t.Namespace.StartsWith(isolatedNamespace + ".")))
                 .ToList();
 
-            var exceptionsCount = 0;
             foreach (var type in typesInNamespace)
-                foreach (var exception in ShouldNotDependOnComponentsOutsideNamespace(type, isolatedNamespace))
-                {
-                    yield return exception;
-                    exceptionsCount++;
-                    if (exceptionsCount > 15)
-                        break;
-                }
+            foreach (var exception in ShouldNotDependOnComponentsOutsideNamespace(type, isolatedNamespace))
+            {
+                yield return exception;
+            }
         }
     }
 
@@ -114,9 +103,6 @@ internal class NamespaceValidator
                     $"Type '{type.FullName}' in isolated namespace '{isolatedNamespace}' " +
                     $"references type '{referencedType.FullName}' from outside namespace '{referencedType.Namespace}'",
                     type, referencedType));
-
-                if (exceptions.Count > 3)
-                    break;
             }
         }
 

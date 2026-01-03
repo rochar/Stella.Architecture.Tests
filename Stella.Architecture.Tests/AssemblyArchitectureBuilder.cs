@@ -132,20 +132,29 @@ public sealed class AssemblyArchitectureBuilder
 
     public void ShouldBeValid()
     {
-        var exceptions = new List<Exception>(15);
+        int maxExceptions = 15;
+        var exceptions = new List<Exception>(maxExceptions);
 
         var allTypes = _assembly.GetTypes();
 
         exceptions.AddRange(_namespaceValidator.ShouldBeValid(allTypes));
+        AssertExceptions(exceptions,maxExceptions);
         exceptions.AddRange(_assemblyValidator.ShouldBeValid(_assembly));
+        AssertExceptions(exceptions, maxExceptions);
         exceptions.AddRange(_dependencyValidator.ShouldBeValid(allTypes));
+        AssertExceptions(exceptions, maxExceptions);
 
         foreach (var typeArchitectureBuilder in _typeBuilders)
         {
             exceptions.AddRange(typeArchitectureBuilder.ShouldBeValid(allTypes));
         }
 
-        if (exceptions.Any())
+        AssertExceptions(exceptions);
+    }
+
+    private static void AssertExceptions(List<Exception> exceptions, int throwIfEqualOrMoreThan = 1)
+    {
+        if (exceptions.Count >= throwIfEqualOrMoreThan)
             throw new AssertArchitectureException("Invalid Architecture", exceptions.ToArray());
     }
 }
