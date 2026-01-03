@@ -6,6 +6,8 @@
 
 A lightweight .NET library for writing architecture tests: verify layering, dependencies, naming conventions, and modular boundaries with a simple fluent API and extension methods.
 
+> **Note:** The Quick Start and usage examples below use xUnit for demonstration, but you can use Stella.Architecture.Tests with any .NET test framework (such as NUnit or MSTest).
+
 ## Why Architecture Tests?
 
 Architecture tests help you:
@@ -155,6 +157,21 @@ public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
     AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithDependencyUsedOnly<InternalApi>(typeof(Service1), typeof(Service2))
+        .ShouldBeValid();
+}
+```
+
+### Testing Type Name EndsWith
+
+Validate that types implementing an interface have names ending with a specific suffix:
+
+```csharp
+[Fact]
+public void DtoTypes_ShouldEndWithDto()
+{
+    AssemblyArchitectureBuilder
+        .ForAssembly(Assembly.Load("MyApp"))
+        .WithType<IDto>(builder => builder.WithNameEndsWith("Dto"))
         .ShouldBeValid();
 }
 ```
