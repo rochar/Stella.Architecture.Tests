@@ -65,7 +65,8 @@ This test ensures that types in the `MyApp.Domain` namespace (and its child name
 
 ## Usage Examples
 
-### Testing Namespace Isolation
+### Assembly Testing 
+#### Namespace Isolation
 
 Ensure a namespace is completely isolated with no dependencies to or from other namespaces  (of your assembly):
 
@@ -80,7 +81,7 @@ public void ShouldBeIsolated_WhenInPluginNamespace()
 }
 ```
 
-### Testing No Inbound Dependencies
+#### Namespace No Inbound Dependencies
 
 Ensure all namespaces do not depend on this namespace (of your assembly):
 
@@ -98,7 +99,7 @@ public void ShouldNotBeReferenced_WhenInInternalNamespace()
 
 
 
-### Testing Forbidden Assembly Dependencies
+#### Forbidden Assembly Dependencies
 
 Prevent your application from depending on specific assemblies:
 
@@ -113,11 +114,9 @@ public void ShouldNotDependOnLegacyLibraries_WhenInCoreAssembly()
 }
 ```
 
-### Testing Type Characteristics
+### Type Testing
 
 #### Is Record
-
-Validate that types follow specific patterns:
 
 ```csharp
 [Fact]
@@ -164,8 +163,6 @@ public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
 ```
 
 ####  Type Name EndsWith
-
-Validate that types implementing an interface have names ending with a specific suffix:
 
 ```csharp
 [Fact]
