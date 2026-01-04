@@ -13,7 +13,7 @@ A lightweight .NET library for writing architecture tests: verify layering, depe
 Architecture tests help you:
 - **Enforce architectural boundaries** between layers and modules
 - **Prevent unwanted dependencies** from creeping into your codebase
-- **Catch violations early** in the development process
+- **Catch violations early** in the development proc√ess
 - **Document architectural decisions** as executable tests
 
 ## Features
@@ -115,6 +115,8 @@ public void ShouldNotDependOnLegacyLibraries_WhenInCoreAssembly()
 
 ### Testing Type Characteristics
 
+#### Is Record
+
 Validate that types follow specific patterns:
 
 ```csharp
@@ -137,7 +139,7 @@ public void ShouldNotBeRecords_WhenImplementingIEntity()
 }
 ```
 
-### Testing Restricted Type Dependencies
+#### Restricted Type Dependencies
 
 Ensure that only specific types can depend on a target type:
 
@@ -161,7 +163,7 @@ public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
 }
 ```
 
-### Testing Type Name EndsWith
+####  Type Name EndsWith
 
 Validate that types implementing an interface have names ending with a specific suffix:
 
@@ -176,3 +178,17 @@ public void DtoTypes_ShouldEndWithDto()
 }
 ```
 
+####  Type Namespace Matchs
+
+Validate that types implementing an interface have namespaces starting with `MyApp` and ending with `.Dtos` :
+
+```csharp
+[Fact]
+public void DtoTypes_ShouldBeInDtoNamespace()
+{
+    AssemblyArchitectureBuilder
+        .ForAssembly(Assembly.Load("MyApp"))
+        .WithType<IDto>(builder => builder.WithNamespaceMatch(@"^MyApp.*\.Dtos$"))
+        .ShouldBeValid();
+}
+```

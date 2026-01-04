@@ -33,7 +33,7 @@ public class TypeArchitectureBuilderTests
     }
 
     [Fact]
-    public void ShouldBeInvalidValidWhenNotRecord()
+    public void ShouldBeInvalidWhenNotRecord()
     {
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
@@ -64,7 +64,7 @@ public class TypeArchitectureBuilderTests
             .ShouldBeValid();
     }
     [Fact]
-    public void ShouldBeInvalidValidWhenNameDoesNotEndsWith()
+    public void ShouldBeInvalidWhenNameDoesNotEndsWith()
     {
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
@@ -78,6 +78,48 @@ public class TypeArchitectureBuilderTests
 
         exception.AssertExceptions.OfType<AssertTypeInvalidException>().ShouldContain(e =>
             e.CurrentType == typeof(DeriveTypeBadName));
+    }
+
+    [Fact]
+    public void ShouldBeValidWhenNamespaceMatchs()
+    {
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithType<ITypeWithTestName>(typeBuilder => typeBuilder.WithNamespaceMatch("Stella.Architecture.Tests.Tests"))
+            .ShouldBeValid();
+    }
+
+    [Fact]
+    public void ShouldBeInvalidWhenNamespaceDoesNotMatch()
+    {
+        var exception = Should.Throw<AssertArchitectureException>(() =>
+        {
+            AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+                .WithType<ITypeWithTestName>(typeBuilder =>
+                    typeBuilder.WithNamespaceMatch("Dummy.Namespace"))
+                .ShouldBeValid();
+        });
+
+
+        exception.AssertExceptions.Length.ShouldBe(1);
+
+        exception.AssertExceptions.OfType<AssertTypeInvalidException>().ShouldContain(e =>
+            e.CurrentType == typeof(TypeWithTestName));
+    }
+    [Fact]
+    public void ShouldBeInvalidWhenMultipleValidations()
+    {
+        var exception = Should.Throw<AssertArchitectureException>(() =>
+        {
+            AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+                .WithType<ITypeWithTestName>(typeBuilder =>
+                    typeBuilder.WithNamespaceMatch("Dummy.Namespace"))
+                .WithType<AClass>(typeBuilder => typeBuilder.IsRecord())
+                .WithType<TypeBadName>(typeBuilder => typeBuilder.IsRecord())
+                .ShouldBeValid();
+        });
+
+
+        exception.AssertExceptions.Length.ShouldBe(4);
     }
     internal sealed class TypeWithTestName:ITypeWithTestName 
     {
