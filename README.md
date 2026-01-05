@@ -162,15 +162,15 @@ public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
 }
 ```
 
-####  Type Name EndsWith
+####  Type Name Match
 
 ```csharp
 [Fact]
-public void DtoTypes_ShouldEndWithDto()
+public void ShouldTypeNameEndWithDto_WhenDto()
 {
     AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
-        .WithType<IDto>(builder => builder.WithNameEndsWith("Dto"))
+        .WithType<IDto>(builder => builder.WithNameMatch("Dto"))
         .ShouldBeValid();
 }
 ```

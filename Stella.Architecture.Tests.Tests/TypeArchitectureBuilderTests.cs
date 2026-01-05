@@ -53,14 +53,14 @@ public class TypeArchitectureBuilderTests
     public void ShouldBeValidWhenNameEndsWithForClass()
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-            .WithType<TypeWithTestName>(typeBuilder => typeBuilder.WithNameEndsWith("TestName"))
+            .WithType<TypeWithTestName>(typeBuilder => typeBuilder.WithNameMatch("TestName"))
             .ShouldBeValid();
     }
     [Fact]
     public void ShouldBeValidWhenNameEndsWithForInterface()
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-            .WithType<ITypeWithTestName>(typeBuilder => typeBuilder.WithNameEndsWith("TestName"))
+            .WithType<ITypeWithTestName>(typeBuilder => typeBuilder.WithNameMatch(".*TestName$"))
             .ShouldBeValid();
     }
     [Fact]
@@ -121,9 +121,9 @@ public class TypeArchitectureBuilderTests
 
         exception.AssertExceptions.Length.ShouldBe(4);
     }
-    internal sealed class TypeWithTestName:ITypeWithTestName 
+    internal sealed class TypeWithTestName : ITypeWithTestName
     {
-        
+
     }
     internal interface ITypeWithTestName
     {

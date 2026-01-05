@@ -11,7 +11,7 @@ namespace Stella.Architecture.Tests
     {
         private readonly Type _type;
         private bool? _isRecord;
-        private string? _nameEndsWith;
+        private System.Text.RegularExpressions.Regex? _nameRegex;
         private System.Text.RegularExpressions.Regex? _namespaceRegex;
 
         private TypeArchitectureBuilder(Type type)
@@ -44,12 +44,13 @@ namespace Stella.Architecture.Tests
         }
 
         /// <summary>
-        /// Validates that the type name must end with the given suffix.
+        /// Validates that the type name must match the given regular expression pattern.
         /// </summary>
-        /// <param name="nameEndsWith">The required suffix for the type name.</param>
-        public TypeArchitectureBuilder WithNameEndsWith(string nameEndsWith)
+        /// <param name="regularExpression">The regular expression pattern to match the type name.</param>
+        public TypeArchitectureBuilder WithNameMatch(string regularExpression)
         {
-            _nameEndsWith = nameEndsWith;
+            _nameRegex = new System.Text.RegularExpressions.Regex(regularExpression,
+                System.Text.RegularExpressions.RegexOptions.Compiled);
             return this;
         }
 
@@ -78,7 +79,7 @@ namespace Stella.Architecture.Tests
                 if (recordEx is not null)
                     yield return recordEx;
 
-                var nameEx = ShouldNameEndsWith(type);
+                var nameEx = ShouldNameMatch(type);
                 if (nameEx is not null)
                     yield return nameEx;
 
@@ -88,11 +89,14 @@ namespace Stella.Architecture.Tests
             }
         }
 
-        private AssertTypeInvalidException? ShouldNameEndsWith(Type type)
+        private AssertTypeInvalidException? ShouldNameMatch(Type type)
         {
-            if (_nameEndsWith is not null && !type.Name.EndsWith(_nameEndsWith))
+            if (_nameRegex is not null && !_nameRegex.IsMatch(type.Name))
+            {
                 return new AssertTypeInvalidException(
-                    $"{type.FullName} Name does not ends with {_nameEndsWith}", type);
+                    $"{type.FullName} Name does not match pattern '{_nameRegex}'", type);
+            }
+
             return null;
         }
 
