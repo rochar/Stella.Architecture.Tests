@@ -50,14 +50,12 @@ internal class DependencyValidator
 
     private bool GetAllowedDependencyTypes(Type typeDependency, out TypeDependencies allowedTypes)
     {
-        if (!typeDependency.IsInterface)
-            return _allowedDependentTypes.TryGetValue(typeDependency, out allowedTypes);
-
-        //include derived types
+        //include Implemented Interfaces
         var includeTypes = new List<Type>();
         var excludeCompilerGenerated = false;
+
         foreach (var entry in _allowedDependentTypes)
-            if (typeDependency.IsAssignableFrom(entry.Key))
+            if (entry.Key == typeDependency || (entry.Key.IsInterface && entry.Key.IsAssignableFrom(typeDependency)))
             {
                 includeTypes.AddRange(entry.Value.Types);
                 excludeCompilerGenerated = excludeCompilerGenerated || entry.Value.ExcludeCompilerGenerated;

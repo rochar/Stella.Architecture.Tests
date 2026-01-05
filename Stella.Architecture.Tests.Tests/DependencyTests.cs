@@ -70,7 +70,7 @@ public class DependencyTests
         exception.AssertExceptions
             .OfType<AssertTypeDependencyException>()
             .Count(d => d.CurrentType == typeof(InvalidDerivedIDependencyDependant) &&
-                        d.ReferencedType == typeof(IDependency))
+                        d.ReferencedType == typeof(Dependency))
             .ShouldBe(1);
     }
 }
@@ -100,9 +100,9 @@ public class InvalidDependant
 
 public class InvalidDerivedIDependencyDependant
 {
-    private readonly IDependency _dependency;
+    private readonly Dependency _dependency;
 
-    public InvalidDerivedIDependencyDependant(IDependency dependency)
+    public InvalidDerivedIDependencyDependant(Dependency dependency)
     {
         _dependency = dependency;
     }
