@@ -114,7 +114,7 @@ public sealed class AssemblyArchitectureBuilder
     /// <returns></returns>
     public AssemblyArchitectureBuilder WithDependencyUsedOnly<TTarget>(params Type[] allowedDependentTypes)
     {
-        return WithDependencyUsedOnly(typeof(TTarget), allowedDependentTypes);
+        return WithDependencyUsedOnly(typeof(TTarget), true, allowedDependentTypes);
     }
 
     /// <summary>
@@ -124,9 +124,9 @@ public sealed class AssemblyArchitectureBuilder
     /// <param name="targetType">The type that should have restricted inbound dependencies</param>
     /// <param name="allowedDependentTypes">Types that are allowed to depend on targetType</param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithDependencyUsedOnly(Type targetType, params Type[] allowedDependentTypes)
+    public AssemblyArchitectureBuilder WithDependencyUsedOnly(Type targetType, bool excludeCompilerGenerated = true, params Type[] allowedDependentTypes)
     {
-        _dependencyValidator.WithDependencyUsedOnly(targetType, allowedDependentTypes);
+        _dependencyValidator.WithDependencyUsedOnly(targetType, allowedDependentTypes, excludeCompilerGenerated);
         return this;
     }
 
@@ -138,7 +138,7 @@ public sealed class AssemblyArchitectureBuilder
         var allTypes = _assembly.GetTypes();
 
         exceptions.AddRange(_namespaceValidator.ShouldBeValid(allTypes));
-        AssertExceptions(exceptions,maxExceptions);
+        AssertExceptions(exceptions, maxExceptions);
         exceptions.AddRange(_assemblyValidator.ShouldBeValid(_assembly));
         AssertExceptions(exceptions, maxExceptions);
         exceptions.AddRange(_dependencyValidator.ShouldBeValid(allTypes));

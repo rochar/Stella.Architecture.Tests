@@ -34,6 +34,22 @@ public class DependencyTests
     }
 
     [Fact]
+    public void ShouldBeValidDependencyWhenExtensionClass()
+    {
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithDependencyUsedOnly<DependencyOnExtension>(typeof(DependencyOnExtensionExtensions))
+            .ShouldBeValid();
+    }
+
+    [Fact]
+    public void ShouldBeValidDependencyWhenClosureClass()
+    {
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithDependencyUsedOnly<DependencyInClosure>(typeof(ClassWithLambdaClosure))
+            .ShouldBeValid();
+    }
+
+    [Fact]
     public void ShouldBeValidDependencyWhenInterface()
     {
         var exception = Should.Throw<AssertArchitectureException>(() =>
@@ -48,7 +64,9 @@ public class DependencyTests
         dependencyException.CurrentType.ShouldBe(typeof(InvalidDependant));
         dependencyException.ReferencedType.ShouldBe(typeof(IDependency));
     }
+
     #region App Classes
+
     public class Dependant : IDependant
     {
         private readonly IDependency _dependency;
@@ -74,4 +92,33 @@ public class DependencyTests
     {
     }
     #endregion
+}
+
+public class DependencyOnExtension
+{
+}
+
+public static class DependencyOnExtensionExtensions
+{
+    public static string DummyExtension(this DependencyOnExtension dependant)
+    {
+        return dependant.ToString() + "Dummy";
+    }
+}
+
+public class DependencyInClosure
+{
+    public string Name { get; set; } = "Dependency";
+}
+
+public class ClassWithLambdaClosure
+{
+    public List<string> ProcessItems(List<string> items)
+    {
+        // This creates a compiler-generated closure class (<>c__DisplayClass) 
+        // that captures the DependencyInClosure instance
+        var dependency = new DependencyInClosure();
+
+        return items.Where(item => item.Contains(dependency.Name)).ToList();
+    }
 }
