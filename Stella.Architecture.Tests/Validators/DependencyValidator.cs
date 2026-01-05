@@ -32,10 +32,6 @@ internal class DependencyValidator
     private IEnumerable<AssertTypeDependencyException> ShouldBeValid(Type currentType,
         ImmutableHashSet<Type> typeDependencies)
     {
-        if (currentType.FullName.IndexOf("InvalidDerivedIDependencyDependant") >= 0)
-        {
-        }
-
         foreach (var typeDependency in typeDependencies)
             if (GetAllowedDependencyTypes(typeDependency, out var allowedTypes))
             {

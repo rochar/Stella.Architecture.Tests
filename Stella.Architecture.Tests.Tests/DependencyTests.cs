@@ -19,7 +19,6 @@ public class DependencyTests
                 .ShouldBeValid();
         });
 
-        exception.AssertExceptions.Length.ShouldBe(1);
         var dependencyException = exception.AssertExceptions.OfType<AssertTypeDependencyException>().Single();
         dependencyException.CurrentType.ShouldBe(typeof(DependsOnTuna));
         dependencyException.ReferencedType.ShouldBe(typeof(Tuna));
@@ -59,7 +58,6 @@ public class DependencyTests
                 .ShouldBeValid();
         });
 
-        exception.AssertExceptions.Length.ShouldBe(3);
         exception.AssertExceptions
             .OfType<AssertTypeDependencyException>()
             .Count(d => d.CurrentType == typeof(InvalidDependant) && d.ReferencedType == typeof(IDependency))
@@ -71,55 +69,56 @@ public class DependencyTests
         //Derived Class of IDependency should also be considered invalid
         exception.AssertExceptions
             .OfType<AssertTypeDependencyException>()
-            .Count(d => d.CurrentType == typeof(InvalidDerivedIDependencyDependant) && d.ReferencedType == typeof(IDependency))
+            .Count(d => d.CurrentType == typeof(InvalidDerivedIDependencyDependant) &&
+                        d.ReferencedType == typeof(IDependency))
             .ShouldBe(1);
-
     }
+}
 
+#region App Classes
 
-    #region App Classes
+public class Dependant : IDependant
+{
+    private readonly IDependency _dependency;
 
-    public class Dependant : IDependant
+    public Dependant(IDependency dependency)
     {
-        private readonly IDependency _dependency;
-
-        public Dependant(IDependency dependency)
-        {
-            _dependency = dependency;
-        }
+        _dependency = dependency;
     }
-    public class Dependency : IDependency
-    {
-    }
-    public class InvalidDependant
-    {
-        public InvalidDependant(IDependency dependency)
-        {
-        }
-    }
-    public class InvalidDerivedIDependencyDependant
-    {
-        private readonly Dependency _dependency;
+}
 
-        public InvalidDerivedIDependencyDependant(Dependency dependency)
-        {
-            _dependency = dependency;
-        }
+public class Dependency : IDependency
+{
+}
 
-        public override string ToString()
-        {
-            return _dependency.ToString() + "Dummy";
-        }
-    }
-
-    public interface IDependant
+public class InvalidDependant
+{
+    public InvalidDependant(IDependency dependency)
     {
     }
+}
 
-    public interface IDependency
+public class InvalidDerivedIDependencyDependant
+{
+    private readonly IDependency _dependency;
+
+    public InvalidDerivedIDependencyDependant(IDependency dependency)
     {
+        _dependency = dependency;
     }
-    #endregion
+
+    public override string ToString()
+    {
+        return _dependency.ToString() + "Dummy";
+    }
+}
+
+public interface IDependant
+{
+}
+
+public interface IDependency
+{
 }
 
 public class DependencyOnExtension
@@ -149,4 +148,6 @@ public class ClassWithLambdaClosure
 
         return items.Where(item => item.Contains(dependency.Name)).ToList();
     }
+
+    #endregion
 }

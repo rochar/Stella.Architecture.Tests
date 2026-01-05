@@ -1,5 +1,5 @@
-using System.Reflection;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace Stella.Architecture.Tests;
 
