@@ -6,11 +6,11 @@ namespace Stella.Architecture.Tests.Validators;
 internal class DependencyValidator
 {
     public record TypeDependencies(Type[] Types, bool ExcludeCompilerGenerated);
+
     private readonly Dictionary<Type, TypeDependencies> _allowedDependentTypes = [];
 
     public void WithDependencyUsedOnly(Type targetType, Type[] allowedDependentTypes, bool excludeCompilerGenerated)
     {
-
         _allowedDependentTypes.Add(targetType, new TypeDependencies(allowedDependentTypes, excludeCompilerGenerated));
     }
 
@@ -32,22 +32,44 @@ internal class DependencyValidator
     private IEnumerable<AssertTypeDependencyException> ShouldBeValid(Type currentType,
         ImmutableHashSet<Type> typeDependencies)
     {
-        foreach (var typeDependency in typeDependencies)
+        if (currentType.FullName.IndexOf("InvalidDerivedIDependencyDependant") >= 0)
         {
-            if (_allowedDependentTypes.TryGetValue(typeDependency, out var allowedTypes))
+        }
+
+        foreach (var typeDependency in typeDependencies)
+            if (GetAllowedDependencyTypes(typeDependency, out var allowedTypes))
             {
-                // Check if we should exclude compiler-generated types
                 if (allowedTypes.ExcludeCompilerGenerated && IsCompilerGenerated(currentType))
                     continue;
 
-                if (!allowedTypes.Types.Any(allowed => allowed.IsAssignableFrom(currentType)))
-                {
+                //Support only derived types from interfaces, concrete base type are not considered avoiding being very
+                //strict and allow the clients to define the rules base on concrete implementations
+                if (!allowedTypes.Types.Any(allowed =>
+                        currentType == allowed || (allowed.IsInterface && allowed.IsAssignableFrom(currentType))))
                     yield return new AssertTypeDependencyException(
                         $"Type {currentType} depends on {typeDependency}, which is not valid.", currentType,
                         typeDependency);
-                }
             }
-        }
+    }
+
+    private bool GetAllowedDependencyTypes(Type typeDependency, out TypeDependencies allowedTypes)
+    {
+        if (!typeDependency.IsInterface)
+            return _allowedDependentTypes.TryGetValue(typeDependency, out allowedTypes);
+
+        //include derived types
+        var includeTypes = new List<Type>();
+        var excludeCompilerGenerated = false;
+        foreach (var entry in _allowedDependentTypes)
+            if (typeDependency.IsAssignableFrom(entry.Key))
+            {
+                includeTypes.AddRange(entry.Value.Types);
+                excludeCompilerGenerated = excludeCompilerGenerated || entry.Value.ExcludeCompilerGenerated;
+            }
+
+        allowedTypes = new TypeDependencies(includeTypes.ToArray(), excludeCompilerGenerated);
+
+        return includeTypes.Any();
     }
 
     private static bool IsCompilerGenerated(Type type)
@@ -61,8 +83,8 @@ internal class DependencyValidator
         if (type.Name.Contains("<>") || type.Name.Contains("__"))
             return true;
 
-        // Check if it's a nested type of a compiler-generated type
-        if (type.IsNested && type.DeclaringType != null && IsCompilerGenerated(type.DeclaringType))
+        // Check if it's a nested type of compiler-generated type
+        if (type is { IsNested: true, DeclaringType: not null } && IsCompilerGenerated(type.DeclaringType))
             return true;
 
         return false;

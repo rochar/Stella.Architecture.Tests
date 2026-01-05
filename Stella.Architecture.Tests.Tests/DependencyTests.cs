@@ -42,15 +42,15 @@ public class DependencyTests
     }
 
     [Fact]
-    public void ShouldBeValidDependencyWhenClosureClass()
+    public void ShouldBeValidDependencyWhenClosureClassWithLambdaClosure()
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-            .WithDependencyUsedOnly<DependencyInClosure>(typeof(ClassWithLambdaClosure))
+            .WithDependencyUsedOnly<DependencyInClosure>(typeof(Dependant))
             .ShouldBeValid();
     }
 
     [Fact]
-    public void ShouldBeValidDependencyWhenInterface()
+    public void ShouldBeInvalidDependencyWhenInterface()
     {
         var exception = Should.Throw<AssertArchitectureException>(() =>
         {
@@ -59,11 +59,23 @@ public class DependencyTests
                 .ShouldBeValid();
         });
 
-        exception.AssertExceptions.Length.ShouldBe(1);
-        var dependencyException = exception.AssertExceptions.OfType<AssertTypeDependencyException>().Single();
-        dependencyException.CurrentType.ShouldBe(typeof(InvalidDependant));
-        dependencyException.ReferencedType.ShouldBe(typeof(IDependency));
+        exception.AssertExceptions.Length.ShouldBe(3);
+        exception.AssertExceptions
+            .OfType<AssertTypeDependencyException>()
+            .Count(d => d.CurrentType == typeof(InvalidDependant) && d.ReferencedType == typeof(IDependency))
+            .ShouldBe(1);
+        exception.AssertExceptions
+            .OfType<AssertTypeDependencyException>()
+            .Count(d => d.CurrentType == typeof(Dependency) && d.ReferencedType == typeof(IDependency))
+            .ShouldBe(1);
+        //Derived Class of IDependency should also be considered invalid
+        exception.AssertExceptions
+            .OfType<AssertTypeDependencyException>()
+            .Count(d => d.CurrentType == typeof(InvalidDerivedIDependencyDependant) && d.ReferencedType == typeof(IDependency))
+            .ShouldBe(1);
+
     }
+
 
     #region App Classes
 
@@ -76,11 +88,27 @@ public class DependencyTests
             _dependency = dependency;
         }
     }
-
+    public class Dependency : IDependency
+    {
+    }
     public class InvalidDependant
     {
         public InvalidDependant(IDependency dependency)
         {
+        }
+    }
+    public class InvalidDerivedIDependencyDependant
+    {
+        private readonly Dependency _dependency;
+
+        public InvalidDerivedIDependencyDependant(Dependency dependency)
+        {
+            _dependency = dependency;
+        }
+
+        public override string ToString()
+        {
+            return _dependency.ToString() + "Dummy";
         }
     }
 

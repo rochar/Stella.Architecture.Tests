@@ -118,11 +118,11 @@ public sealed class AssemblyArchitectureBuilder
     }
 
     /// <summary>
-    /// Validates that only specific types can have dependencies to the target type.
+    /// Validates that only specific types can have dependencies to the target type or derived types if target type is an interface.
     /// Any other type in the assembly that depends on the target type will cause validation to fail.
     /// </summary>
     /// <param name="targetType">The type that should have restricted inbound dependencies</param>
-    /// <param name="allowedDependentTypes">Types that are allowed to depend on targetType</param>
+    /// <param name="allowedDependentTypes">Types that are allowed to depend on targetType. Or Derived Types if allowed type is an Interface</param>
     /// <returns></returns>
     public AssemblyArchitectureBuilder WithDependencyUsedOnly(Type targetType, bool excludeCompilerGenerated = true, params Type[] allowedDependentTypes)
     {
