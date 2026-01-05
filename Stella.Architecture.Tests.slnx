@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="generated-image-90c9d950-8ff0-4b26-9966-3d96323b57a6.jpg" />
     <File Path="README.md" />
   </Folder>
   <Project Path="Stella.Architecture.Tests.Tests/Stella.Architecture.Tests.Tests.csproj" />
