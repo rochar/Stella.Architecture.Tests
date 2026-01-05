@@ -170,7 +170,7 @@ public void ShouldTypeNameEndWithDto_WhenDto()
 {
     AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
-        .WithType<IDto>(builder => builder.WithNameMatch("Dto"))
+        .WithType<IDto>(builder => builder.WithNameMatch(".*Dto$"))
         .ShouldBeValid();
 }
 ```
