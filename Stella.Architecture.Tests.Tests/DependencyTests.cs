@@ -75,7 +75,7 @@ public class DependencyTests
     }
 }
 
-#region App Classes
+#region App Test Classes
 
 public class Dependant : IDependant
 {
@@ -148,6 +148,6 @@ public class ClassWithLambdaClosure
 
         return items.Where(item => item.Contains(dependency.Name)).ToList();
     }
-
-    #endregion
 }
+
+#endregion

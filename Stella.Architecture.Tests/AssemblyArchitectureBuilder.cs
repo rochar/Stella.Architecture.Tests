@@ -12,7 +12,7 @@ public sealed class AssemblyArchitectureBuilder
     private readonly DependencyValidator _dependencyValidator = new();
 
 
-    private readonly List<TypeArchitectureBuilder> _typeBuilders = [];
+    private readonly List<ITypeArchitectureBuilder> _typeBuilders = [];
 
 
     private AssemblyArchitectureBuilder(Assembly assembly)
@@ -33,22 +33,9 @@ public sealed class AssemblyArchitectureBuilder
     /// <typeparam name="TTarget">The target type to validate</typeparam>
     /// <param name="configure">Configuration action for type validation rules</param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithType<TTarget>(Action<TypeArchitectureBuilder> configure)
+    public AssemblyArchitectureBuilder WithType<TTarget>(Action<TypeArchitectureBuilder<TTarget>> configure)
     {
-        return WithType(typeof(TTarget), configure);
-    }
-
-    /// <summary>
-    /// Validates specific characteristics for types in the assembly that match the target type.
-    /// Applies to all types where Type.IsAssignableFrom returns true for the target type.
-    /// Configure validation rules using the provided TypeArchitectureBuilder action.
-    /// </summary>
-    /// <param name="type">The target type to validate</param>
-    /// <param name="configure">Configuration action for type validation rules</param>
-    /// <returns></returns>
-    public AssemblyArchitectureBuilder WithType(Type type, Action<TypeArchitectureBuilder> configure)
-    {
-        var typeBuilder = TypeArchitectureBuilder.ForType(type);
+        var typeBuilder = TypeArchitectureBuilder<TTarget>.ForType();
         configure(typeBuilder);
         _typeBuilders.Add(typeBuilder);
         return this;

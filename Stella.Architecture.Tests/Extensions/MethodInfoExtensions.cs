@@ -10,10 +10,10 @@ public static class MethodInfoExtensions
         public void ShouldHaveAttribute(Type attributeType)
         {
             if (!method.HasAttribute(attributeType))
-                throw new AssertArchitectureException($"Method {method.Name} expected to have attribute {attributeType.FullName}");
+                throw new AssertMethodInvalidException($"Method {method.Name} expected to have attribute {attributeType.FullName}", null, method);
         }
 
-        private bool HasAttribute(Type attributeType)
+        internal bool HasAttribute(Type attributeType)
         {
             var attributes = method.GetCustomAttributes(true);
             return attributes.Any(attr => attr.GetType() == attributeType);

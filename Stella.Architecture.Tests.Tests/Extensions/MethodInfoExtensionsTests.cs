@@ -18,7 +18,7 @@ public class MethodInfoExtensionsTests
     [Fact]
     public void ShouldHaveAttributeFailsWhenMethodDoesNotHaveAttribute()
     {
-        var exception = Should.Throw<AssertArchitectureException>(() =>
+        var exception = Should.Throw<AssertMethodInvalidException>(() =>
         {
             var method = typeof(AClass).GetMethod(nameof(AClass.MethodWithoutAttributes));
             method!.ShouldHaveAttribute(typeof(ObsoleteAttribute));
