@@ -1,6 +1,5 @@
 ﻿using Shouldly;
 using Stella.Architecture.Tests.Exceptions;
-using Stella.Architecture.Tests.Tests.App;
 using System.Reflection;
 
 namespace Stella.Architecture.Tests.Tests;
@@ -30,20 +29,11 @@ public class MethodArchitectureBuilderTests
     [Fact]
     public void ShouldBeValidWhenHasRequiredAttribute()
     {
-        var exception = Should.Throw<AssertArchitectureException>(() =>
-        {
-            AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
-                .WithType<TypeWithAttribute>(configure =>
-                    configure.WithMethod(t => t.MethodWithAttribute(),
-                        configureMethod => configureMethod.WithRequiredAttribute(typeof(TestForMethodAttribute))))
-                .ShouldBeValid();
-        });
-
-
-        exception.AssertExceptions.Length.ShouldBe(1);
-
-        exception.AssertExceptions.OfType<AssertTypeInvalidException>().ShouldContain(e =>
-            e.CurrentType == typeof(AClass));
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithType<TypeWithAttribute>(configure =>
+                configure.WithMethod(t => t.MethodWithAttribute(),
+                    configureMethod => configureMethod.WithRequiredAttribute(typeof(TestForMethodAttribute))))
+            .ShouldBeValid();
     }
 }
 
