@@ -35,6 +35,16 @@ public class MethodArchitectureBuilderTests
                     configureMethod => configureMethod.WithRequiredAttribute(typeof(TestForMethodAttribute))))
             .ShouldBeValid();
     }
+
+    [Fact]
+    public void ShouldBeValidWhenInterfaceAndHasRequiredAttribute()
+    {
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithType<ITypeWithAttribute>(configure =>
+                configure.WithMethod(t => t.MethodWithAttribute(),
+                    configureMethod => configureMethod.WithRequiredAttribute(typeof(TestForMethodAttribute))))
+            .ShouldBeValid();
+    }
 }
 
 #region App Test Classes
@@ -44,7 +54,7 @@ public class TestForMethodAttribute : Attribute
 {
 }
 
-internal sealed class TypeWithAttribute
+internal sealed class TypeWithAttribute : ITypeWithAttribute
 {
     private readonly int _dummy = 1;
 
@@ -58,6 +68,11 @@ internal sealed class TypeWithAttribute
     {
         return _dummy;
     }
+}
+
+internal interface ITypeWithAttribute
+{
+    int MethodWithAttribute();
 }
 
 #endregion

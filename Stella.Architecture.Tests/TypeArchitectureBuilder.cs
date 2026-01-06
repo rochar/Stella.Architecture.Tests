@@ -93,7 +93,7 @@ public sealed class TypeArchitectureBuilder<T> : ITypeArchitectureBuilder
     /// Returns all invalid type exceptions found.
     /// </summary>
     /// <param name="allTypes">All types to validate.</param>
-    /// <returns>Enumerable of AssertTypeInvalidException for each violation.</returns>
+    /// <returns>Enumerable of Exception for each violation.</returns>
     public IEnumerable<Exception> ShouldBeValid(Type[] allTypes)
     {
         foreach (var type in allTypes.Where(t => !t.IsInterface && _type.IsAssignableFrom(t)))
