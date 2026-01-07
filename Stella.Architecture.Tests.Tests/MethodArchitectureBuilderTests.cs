@@ -55,10 +55,22 @@ public class MethodArchitectureBuilderTests
         exception.AssertExceptions.OfType<AssertMethodInvalidException>().ShouldContain(e =>
             e.CurrentType == typeof(TypeWithoutAttribute));
     }
+
     [Fact]
-    public void ShouldBeValidWhenConcreteFromGenericInterfaceHasRequiredAttribute()
+    public void ShouldBeValidWhenConcreteFromGenericInterfaceWithHasRequiredAttribute()
     {
-        var methodInfo = typeof(IGenericTypeWithAttribute<,>).GetMethod(nameof(IGenericTypeWithAttribute<object, object>.MethodWithAttribute));
+        var methodInfo = typeof(IGenericTypeWithAttribute<,>).GetMethod(nameof(IGenericTypeWithAttribute<object, object>.WithoutGenericParameters));
+
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithType(typeof(IGenericTypeWithAttribute<,>), configure =>
+                configure.WithMethod(methodInfo!,
+                    configureMethod => configureMethod.WithRequiredAttribute(typeof(TestForMethodAttribute))))
+            .ShouldBeValid();
+    }
+    [Fact]
+    public void ShouldBeValidWhenConcreteFromGenericInterfaceWithGenericParametersHasRequiredAttribute()
+    {
+        var methodInfo = typeof(IGenericTypeWithAttribute<,>).GetMethod(nameof(IGenericTypeWithAttribute<object, object>.WithGenericParameters));
 
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
             .WithType(typeof(IGenericTypeWithAttribute<,>), configure =>
@@ -89,6 +101,16 @@ internal sealed class TypeWithAttribute : ITypeWithAttribute, IGenericTypeWithAt
     {
         return _dummy;
     }
+    [TestForMethod]
+    public Task<string> WithGenericParameters(string query, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        throw new NotImplementedException();
+    }
+    [TestForMethod]
+    public string WithoutGenericParameters(string query, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        throw new NotImplementedException();
+    }
 }
 internal sealed class TypeWithoutAttribute : ITypeWithAttribute
 {
@@ -104,9 +126,11 @@ internal interface ITypeWithAttribute
 {
     int MethodWithAttribute();
 }
-internal interface IGenericTypeWithAttribute<T1, T2> : ITypeWithAttribute
+internal interface IGenericTypeWithAttribute<TQuery, TResult>
 {
-    int MethodWithAttribute();
+    Task<TResult> WithGenericParameters(TQuery query, CancellationToken cancellationToken = default(CancellationToken));
+
+    TResult WithoutGenericParameters(string query, CancellationToken cancellationToken = default(CancellationToken));
 }
 
 #endregion

@@ -100,7 +100,7 @@ public class MethodArchitectureBuilder
             return false;
 
         for (var i = 0; i < params1.Length; i++)
-            if (params1[i].ParameterType != params2[i].ParameterType)
+            if (!params2[i].ParameterType.IsGenericParameter && params1[i].ParameterType != params2[i].ParameterType)
                 return false;
 
         return true;
