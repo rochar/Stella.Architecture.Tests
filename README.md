@@ -195,7 +195,7 @@ public void DtoTypes_ShouldBeInDtoNamespace()
 
 ```csharp
 [Fact]
-public void ShouldBeRecords_WhenImplementingIDto()
+public void ShouldHaveMyAttribute_WhenImplementingIDto()
 {
     AssemblyArchitectureconfigure
         .ForAssembly(Assembly.Load("MyApp"))

@@ -74,10 +74,10 @@ public class TypeArchitectureBuilderTests
         });
 
 
-        exception.AssertExceptions.Length.ShouldBe(2);
+        exception.AssertExceptions.Length.ShouldBe(1);
 
         exception.AssertExceptions.OfType<AssertTypeInvalidException>().ShouldContain(e =>
-            e.CurrentType == typeof(DeriveTypeBadName));
+            e.CurrentType == typeof(TypeBadName));
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class TypeArchitectureBuilderTests
         });
 
 
-        exception.AssertExceptions.Length.ShouldBe(4);
+        exception.AssertExceptions.Length.ShouldBe(3);
     }
     internal sealed class TypeWithTestName : ITypeWithTestName
     {

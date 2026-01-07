@@ -33,9 +33,21 @@ public sealed class AssemblyArchitectureBuilder
     /// <typeparam name="TTarget">The target type to validate</typeparam>
     /// <param name="configure">Configuration action for type validation rules</param>
     /// <returns></returns>
-    public AssemblyArchitectureBuilder WithType<TTarget>(Action<TypeArchitectureBuilder<TTarget>> configure)
+    public AssemblyArchitectureBuilder WithType<TTarget>(Action<TypeArchitectureBuilder> configure)
     {
-        var typeBuilder = TypeArchitectureBuilder<TTarget>.ForType();
+        return WithType(typeof(TTarget), configure);
+    }
+    /// <summary>
+    /// Validates specific characteristics for types in the assembly that match the target type.
+    /// Applies to all types where Type.IsAssignableFrom returns true for the target type.
+    /// Configure validation rules using the provided TypeArchitectureBuilder action.
+    /// </summary>
+    /// <param name="type">The target type to validate</param>
+    /// <param name="configure">Configuration action for type validation rules</param>
+    /// <returns></returns>
+    public AssemblyArchitectureBuilder WithType(Type type, Action<TypeArchitectureBuilder> configure)
+    {
+        var typeBuilder = TypeArchitectureBuilder.ForType(type);
         configure(typeBuilder);
         _typeBuilders.Add(typeBuilder);
         return this;
@@ -109,6 +121,7 @@ public sealed class AssemblyArchitectureBuilder
     /// Any other type in the assembly that depends on the target type will cause validation to fail.
     /// </summary>
     /// <param name="targetType">The type that should have restricted inbound dependencies</param>
+    /// <param name="excludeCompilerGenerated">Exclude Generated code from the compiler</param>
     /// <param name="allowedDependentTypes">Types that are allowed to depend on targetType. Or Derived Types if allowed type is an Interface</param>
     /// <returns></returns>
     public AssemblyArchitectureBuilder WithDependencyUsedOnly(Type targetType, bool excludeCompilerGenerated = true, params Type[] allowedDependentTypes)
