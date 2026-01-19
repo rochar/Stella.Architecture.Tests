@@ -17,5 +17,28 @@ public static class TypeExtensions
             if (!type.IsRecord())
                 throw new AssertTypeInvalidException($"{type.FullName} expected to be a record", type);
         }
+        public AccessModifierType GetModifierType()
+        {
+            if (type.IsNested)
+            {
+                if (type.IsNestedPublic)
+                    return AccessModifierType.Public;
+                if (type.IsNestedPrivate)
+                    return AccessModifierType.Private;
+                if (type.IsNestedFamily)
+                    return AccessModifierType.Protected;
+                if (type.IsNestedAssembly)
+                    return AccessModifierType.Internal;
+            }
+            else
+            {
+                if (type.IsPublic)
+                    return AccessModifierType.Public;
+                if (type.IsNotPublic)
+                    return AccessModifierType.Internal;
+            }
+
+            return AccessModifierType.Internal;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using Stella.Architecture.Tests.Exceptions;
+using Stella.Architecture.Tests.Extensions;
 using Stella.Architecture.Tests.Tests.App;
 using System.Reflection;
 
@@ -120,6 +121,40 @@ public class TypeArchitectureBuilderTests
 
 
         exception.AssertExceptions.Length.ShouldBe(3);
+    }
+    [Theory]
+    [InlineData(typeof(TypeWithTestName), ModifierType.Internal)]
+    [InlineData(typeof(PublicType), ModifierType.Public)]
+    [InlineData(typeof(ProtectedType), ModifierType.Protected)]
+    public void ShouldHaveModifier(Type type, ModifierType modifierType)
+    {
+        AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+            .WithType(type, typeBuilder =>
+                typeBuilder.WithModifier(modifierType))
+            .ShouldBeValid();
+    }
+    [Fact]
+    public void ShouldBeInvalidModifier()
+    {
+        var exception = Should.Throw<AssertArchitectureException>(() =>
+        {
+            AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
+                .WithType<PublicType>(typeBuilder =>
+                    typeBuilder.WithModifier(ModifierType.Internal))
+                .ShouldBeValid();
+        });
+
+        exception.AssertExceptions.Length.ShouldBe(1);
+        exception.AssertExceptions.First().GetType().ShouldBe(typeof(AssertTypeInvalidException));
+        exception.AssertExceptions.First().Message.ShouldBe("Stella.Architecture.Tests.Tests.TypeArchitectureBuilderTests+PublicType has modifier 'Public' but expected 'Internal'");
+    }
+    public sealed class PublicType : ITypeWithTestName
+    {
+
+    }
+    protected sealed class ProtectedType : ITypeWithTestName
+    {
+
     }
     internal sealed class TypeWithTestName : ITypeWithTestName
     {

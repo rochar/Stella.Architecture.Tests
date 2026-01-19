@@ -13,6 +13,7 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
 {
     private readonly Type _inValidationType;
     private bool? _isRecord;
+    private AccessModifierType? _modifierType;
     private System.Text.RegularExpressions.Regex? _nameRegex;
     private System.Text.RegularExpressions.Regex? _namespaceRegex;
     private readonly List<MethodArchitectureBuilder> _methodBuilders = [];
@@ -42,6 +43,26 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
         _isRecord = true;
         return this;
     }
+
+    /// <summary>
+    /// Validates that the type must have the specified access modifier.
+    /// </summary>
+    /// <param name="type">The required access modifier.</param>
+    public TypeArchitectureBuilder WithAccessModifier(AccessModifierType type)
+    {
+        _modifierType = type;
+        return this;
+    }
+
+    /// <summary>
+    /// Validates that the type must be public.
+    /// </summary>
+    public TypeArchitectureBuilder IsPublic() => WithAccessModifier(AccessModifierType.Public);
+
+    /// <summary>
+    /// Validates that the type must be internal.
+    /// </summary>
+    public TypeArchitectureBuilder IsInternal() => WithAccessModifier(AccessModifierType.Internal);
 
     /// <summary>
     /// Validates that the type must not be a record.
@@ -147,6 +168,10 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
             if (recordEx is not null)
                 yield return recordEx;
 
+            var modifierEx = ShouldHaveModifier(_inValidationType);
+            if (modifierEx is not null)
+                yield return modifierEx;
+
             var nameEx = ShouldNameMatch(_inValidationType);
             if (nameEx is not null)
                 yield return nameEx;
@@ -166,6 +191,10 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
                 var recordEx = ShouldBeRecord(type);
                 if (recordEx is not null)
                     yield return recordEx;
+
+                var modifierEx = ShouldHaveModifier(type);
+                if (modifierEx is not null)
+                    yield return modifierEx;
 
                 var nameEx = ShouldNameMatch(type);
                 if (nameEx is not null)
@@ -223,6 +252,19 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
                 return new AssertTypeInvalidException(
                     $"{type.FullName} Namespace '{ns}' does not match pattern '{_namespaceRegex}'", type);
         }
+
+        return null;
+    }
+
+    private AssertTypeInvalidException? ShouldHaveModifier(Type type)
+    {
+        if (_modifierType is null)
+            return null;
+
+        var actualModifier = type.GetModifierType();
+        if (actualModifier != _modifierType.Value)
+            return new AssertTypeInvalidException(
+                $"{type.FullName} has modifier '{actualModifier}' but expected '{_modifierType.Value}'", type);
 
         return null;
     }
