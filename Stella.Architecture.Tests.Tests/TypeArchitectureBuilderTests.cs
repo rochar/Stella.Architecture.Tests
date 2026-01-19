@@ -123,14 +123,14 @@ public class TypeArchitectureBuilderTests
         exception.AssertExceptions.Length.ShouldBe(3);
     }
     [Theory]
-    [InlineData(typeof(TypeWithTestName), ModifierType.Internal)]
-    [InlineData(typeof(PublicType), ModifierType.Public)]
-    [InlineData(typeof(ProtectedType), ModifierType.Protected)]
-    public void ShouldHaveModifier(Type type, ModifierType modifierType)
+    [InlineData(typeof(TypeWithTestName), AccessModifierType.Internal)]
+    [InlineData(typeof(PublicType), AccessModifierType.Public)]
+    [InlineData(typeof(ProtectedType), AccessModifierType.Protected)]
+    public void ShouldHaveModifier(Type type, AccessModifierType accessModifierType)
     {
         AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
             .WithType(type, typeBuilder =>
-                typeBuilder.WithModifier(modifierType))
+                typeBuilder.WithAccessModifier(accessModifierType))
             .ShouldBeValid();
     }
     [Fact]
@@ -140,7 +140,7 @@ public class TypeArchitectureBuilderTests
         {
             AssemblyArchitectureBuilder.ForAssembly(Assembly.GetExecutingAssembly())
                 .WithType<PublicType>(typeBuilder =>
-                    typeBuilder.WithModifier(ModifierType.Internal))
+                    typeBuilder.WithAccessModifier(AccessModifierType.Internal))
                 .ShouldBeValid();
         });
 
