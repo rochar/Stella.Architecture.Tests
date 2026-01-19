@@ -148,11 +148,11 @@ public class TypeArchitectureBuilderTests
         exception.AssertExceptions.First().GetType().ShouldBe(typeof(AssertTypeInvalidException));
         exception.AssertExceptions.First().Message.ShouldBe("Stella.Architecture.Tests.Tests.TypeArchitectureBuilderTests+PublicType has modifier 'Public' but expected 'Internal'");
     }
-    public sealed class PublicType : ITypeWithTestName
+    public sealed class PublicType
     {
 
     }
-    protected sealed class ProtectedType : ITypeWithTestName
+    protected sealed class ProtectedType
     {
 
     }
