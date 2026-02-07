@@ -17,7 +17,7 @@ public class MethodArchitectureBuilder
     }
 
 
-    public static MethodArchitectureBuilder ForMethod(Type type, MethodInfo methodInfo)
+    internal static MethodArchitectureBuilder ForMethod(Type type, MethodInfo methodInfo)
     {
         return new MethodArchitectureBuilder(type, methodInfo);
     }

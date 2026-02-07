@@ -25,12 +25,12 @@ public sealed class TypeArchitectureBuilder : ITypeArchitectureBuilder
     }
 
 
-    public static TypeArchitectureBuilder ForType<T>()
+    internal static TypeArchitectureBuilder ForType<T>()
     {
         return new TypeArchitectureBuilder(typeof(T));
     }
 
-    public static TypeArchitectureBuilder ForType(Type type)
+    internal static TypeArchitectureBuilder ForType(Type type)
     {
         return new TypeArchitectureBuilder(type);
     }
