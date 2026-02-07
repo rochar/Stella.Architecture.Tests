@@ -3,8 +3,13 @@ using System.Reflection;
 namespace Stella.Architecture.Tests.Exceptions;
 
 [Serializable]
-public class AssertAssembyDependencyException(AssemblyName assemblyName)
-  : Exception($"Assembly depends on forbidden assembly '{assemblyName.FullName}'")
+public class AssertAssembyDependencyException(AssemblyName assemblyName, string message)
+    : Exception(message)
 {
-  public AssemblyName ReferencedAssembly { get; } = assemblyName;
+    public AssertAssembyDependencyException(AssemblyName assemblyName) : this(assemblyName,
+        $"Assembly depends on forbidden assembly '{assemblyName.FullName}'")
+    {
+    }
+
+    public AssemblyName ReferencedAssembly { get; } = assemblyName;
 }

@@ -8,7 +8,7 @@ public sealed class AssemblyArchitectureBuilder
 {
     private readonly Assembly _assembly;
     private readonly NamespaceValidator _namespaceValidator = new();
-    private readonly AssemblyValidator _assemblyValidator = new();
+    private readonly AssemblyValidator _assemblyValidator;
     private readonly DependencyValidator _dependencyValidator = new();
 
 
@@ -18,6 +18,7 @@ public sealed class AssemblyArchitectureBuilder
     private AssemblyArchitectureBuilder(Assembly assembly)
     {
         _assembly = assembly;
+        _assemblyValidator = new AssemblyValidator(assembly);
     }
 
     public static AssemblyArchitectureBuilder ForAssembly(Assembly assembly)
@@ -139,7 +140,7 @@ public sealed class AssemblyArchitectureBuilder
 
         exceptions.AddRange(_namespaceValidator.ShouldBeValid(allTypes));
         AssertExceptions(exceptions, maxExceptions);
-        exceptions.AddRange(_assemblyValidator.ShouldBeValid(_assembly));
+        exceptions.AddRange(_assemblyValidator.ShouldBeValid());
         AssertExceptions(exceptions, maxExceptions);
         exceptions.AddRange(_dependencyValidator.ShouldBeValid(allTypes));
         AssertExceptions(exceptions, maxExceptions);

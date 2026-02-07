@@ -12,10 +12,8 @@ namespace Stella.Architecture.Tests;
 public sealed class SolutionArchitectureBuilder
 {
     private readonly List<Assembly> _assemblies;
-    private readonly List<AssemblyArchitectureBuilder> _assemblyBuilders = [];
-    private readonly AssemblyValidator _assemblyValidator = new();
-    private readonly DependencyValidator _dependencyValidator = new();
-   
+    private readonly List<IAssemblyInSolutionArchitectureBuilder> _assemblyBuilders = [];
+  
     private SolutionArchitectureBuilder(IEnumerable<Assembly> assemblies)
     {
         _assemblies = assemblies.ToList();
@@ -40,12 +38,16 @@ public sealed class SolutionArchitectureBuilder
     }
 
     /// <summary>
-    ///     Adds an additional assembly to the solution validation scope.
+    ///     Ensures the assembly is included in the solution validation scope.
+    ///     The assembly must have been provided in the initial ForAssemblies call.
     /// </summary>
-    /// <param name="assembly">The assembly to add.</param>
+    /// <param name="assembly">The assembly to verify.</param>
     public SolutionArchitectureBuilder WithAssembly(Assembly assembly)
     {
-        _assemblies.Add(assembly);
+        if (!_assemblies.Contains(assembly))
+        {
+            throw new ArgumentException($"Assembly {assembly.GetName().Name} was not provided in ForAssemblies", nameof(assembly));
+        }
         return this;
     }
 
@@ -54,10 +56,14 @@ public sealed class SolutionArchitectureBuilder
     /// </summary>
     /// <param name="assembly">The assembly to add.</param>
     /// <param name="configure">Configuration action for the assembly validation rules.</param>
-    public SolutionArchitectureBuilder WithAssembly(Assembly assembly, Action<AssemblyArchitectureBuilder> configure)
+    public SolutionArchitectureBuilder WithAssembly(Assembly assembly, Action<IAssemblyInSolutionArchitectureBuilder> configure)
     {
-        _assemblies.Add(assembly);
-        var builder = AssemblyArchitectureBuilder.ForAssembly(assembly);
+        if (!_assemblies.Contains(assembly))
+        {
+            throw new ArgumentException($"Assembly {assembly.GetName().Name} was not provided in ForAssemblies", nameof(assembly));
+        }
+        
+        var builder = new AssemblyInSolutionArchitectureBuilder(assembly, AssemblyArchitectureBuilder.ForAssembly(assembly), _assemblies);
         configure(builder);
         _assemblyBuilders.Add(builder);
         return this;
