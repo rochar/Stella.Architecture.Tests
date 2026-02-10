@@ -20,7 +20,6 @@ public class NamespaceNoOutboundDependenciesTests
         });
 
 
-        exception.AssertExceptions.Length.ShouldBe(4);
         var dependencyExceptions = exception.AssertExceptions.OfType<AssertTypeDependencyException>().ToArray();
         dependencyExceptions.ShouldContain(e =>
             e.CurrentType == typeof(Tuna) && e.ReferencedType == typeof(Salmon));

@@ -95,13 +95,15 @@ public sealed class AssemblyArchitectureBuilder
 
     /// <summary>
     /// Validates that types inside the namespace do not depend on types outside the namespace.
-    /// Any type inside the namespace that references a type outside will cause validation to fail.
+    /// Any type inside the namespace that references a type outside will cause validation to fail,
+    /// unless the referenced type is in one of the exception namespaces.
     /// </summary>
     /// <param name="namespaceName">The namespace to restrict outbound dependencies from (includes child namespaces)</param>
-    /// <returns></returns>
-    public AssemblyArchitectureBuilder WithNamespaceNoOutboundDependencies(string namespaceName)
+    /// <param name="exceptToNamespace">Namespaces that are allowed as dependencies (case-insensitive comparison)</param>
+    /// <returns>The current builder instance for method chaining.</returns>
+    public AssemblyArchitectureBuilder WithNamespaceNoOutboundDependencies(string namespaceName, params string[] exceptToNamespace)
     {
-        _namespaceValidator.WithNamespaceNoOutboundDependencies(namespaceName);
+        _namespaceValidator.WithNamespaceNoOutboundDependencies(namespaceName, exceptToNamespace);
         return this;
     }
 
