@@ -13,7 +13,7 @@ A lightweight .NET library for writing architecture tests: verify layering, depe
 Architecture tests help you:
 - **Enforce architectural boundaries** between layers and modules
 - **Prevent unwanted dependencies** from creeping into your codebase
-- **Catch violations early** in the development proc√ess
+- **Catch violations early** in the development process
 - **Document architectural decisions** as executable tests
 
 ## Features
@@ -54,7 +54,7 @@ public class ArchitectureTests
     [Fact]
     public void ShouldNotDependOnOtherLayers_WhenInDomainLayer()
     {
-        AssemblyArchitectureconfigure
+        AssemblyArchitectureBuilder
             .ForAssembly(Assembly.Load("MyApp"))
             .WithNamespaceNoOutboundDependencies("MyApp.Domain")
             .ShouldBeValid();
@@ -74,7 +74,7 @@ Ensure a namespace is completely isolated with no dependencies to or from other 
 [Fact]
 public void ShouldBeIsolated_WhenInPluginNamespace()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithNamespaceIsolated("MyApp.Plugin")
         .ShouldBeValid();
@@ -90,7 +90,7 @@ Ensure all namespaces do not depend on this namespace (of your assembly):
 [Fact]
 public void ShouldNotBeReferenced_WhenInInternalNamespace()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithNamespaceNoInboundDependencies("MyApp.Internal")
         .ShouldBeValid();
@@ -107,7 +107,7 @@ Prevent your application from depending on specific assemblies:
 [Fact]
 public void ShouldNotDependOnLegacyLibraries_WhenInCoreAssembly()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithAssemblyForbiddenDependency("Newtonsoft") // Regex pattern        
         .ShouldBeValid();
@@ -122,7 +122,7 @@ public void ShouldNotDependOnLegacyLibraries_WhenInCoreAssembly()
 [Fact]
 public void ShouldBeRecords_WhenImplementingIDto()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IDto>(configure => configure.IsRecord())
         .ShouldBeValid();
@@ -131,7 +131,7 @@ public void ShouldBeRecords_WhenImplementingIDto()
 [Fact]
 public void ShouldNotBeRecords_WhenImplementingIEntity()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IEntity>(configure => configure.IsNotRecord())
         .ShouldBeValid();
@@ -146,7 +146,7 @@ Ensure that only specific types can depend on a target type:
 [Fact]
 public void ShouldOnlyBeUsedByServices_WhenDatabaseContext()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithDependencyUsedOnly<DatabaseContext>(typeof(IService))
         .ShouldBeValid();
@@ -155,7 +155,7 @@ public void ShouldOnlyBeUsedByServices_WhenDatabaseContext()
 [Fact]
 public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithDependencyUsedOnly<InternalApi>(typeof(Service1), typeof(Service2))
         .ShouldBeValid();
@@ -168,7 +168,7 @@ public void ShouldOnlyBeUsedByApprovedServices_WhenInternalApi()
 [Fact]
 public void ShouldTypeNameEndWithDto_WhenDto()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IDto>(configure => configure.WithNameMatch(".*Dto$"))
         .ShouldBeValid();
@@ -183,7 +183,7 @@ Validate that types implementing an interface have namespaces starting with `MyA
 [Fact]
 public void DtoTypes_ShouldBeInDtoNamespace()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IDto>(configure => configure.WithNamespaceMatch(@"^MyApp.*\.Dtos$"))
         .ShouldBeValid();
@@ -197,7 +197,7 @@ public void DtoTypes_ShouldBeInDtoNamespace()
 [Fact]
 public void ShouldHaveMyAttribute_WhenImplementingIDto()
 {
-    AssemblyArchitectureconfigure
+    AssemblyArchitectureBuilder
         .ForAssembly(Assembly.Load("MyApp"))
         .WithType<IDto>(configure => configure.WithMethod(type => type.MethodA(),
             configureMethod => configureMethod.WithRequiredAttribute(typeof(MyAttribute))))
