@@ -24,7 +24,7 @@ public interface IAssemblyInSolutionArchitectureBuilder
     /// <param name="forbiddenAssemblyNames">The names of the solution assemblies that are forbidden dependencies</param>
     /// <returns></returns>
     IAssemblyInSolutionArchitectureBuilder WithForbiddenSolutionDependencies(params string[] forbiddenAssemblyNames);
-    
+
     /// <summary>
     /// Validates all configured architectural rules, including solution-specific ones.
     /// </summary>

@@ -46,7 +46,7 @@ internal class AssemblyValidator(Assembly assemblyToValidate)
         {
             var regex = new System.Text.RegularExpressions.Regex($"^{System.Text.RegularExpressions.Regex.Escape(name)}$",
                 System.Text.RegularExpressions.RegexOptions.Compiled);
-            
+
             _forbiddenAssemblyRules.Add((regex, $"Assembly '{assemblyToValidate.GetName().Name}' is forbidden to depend on solution assembly '{name}'"));
         }
     }
@@ -60,13 +60,13 @@ internal class AssemblyValidator(Assembly assemblyToValidate)
         foreach (var referenced in referencedAssemblies)
         {
             var nameToMatch = referenced.Name ?? referenced.FullName;
-            
+
             foreach (var (regex, customErrorMessage) in _forbiddenAssemblyRules)
             {
                 if (regex.IsMatch(nameToMatch))
                 {
-                    exceptions.Add(customErrorMessage != null 
-                        ? new AssertAssembyDependencyException(referenced, customErrorMessage) 
+                    exceptions.Add(customErrorMessage != null
+                        ? new AssertAssembyDependencyException(referenced, customErrorMessage)
                         : new AssertAssembyDependencyException(referenced));
                 }
             }

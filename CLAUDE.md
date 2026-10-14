@@ -12,6 +12,7 @@ dotnet test -- --filter-method "*ShouldBeValidWhenNoRulesAreDefined"
 ```
 
 - Tests use **xUnit v3 on Microsoft Testing Platform** (`UseMicrosoftTestingPlatformRunner`), so filters are passed after `--` as MTP options (`--filter-class`, `--filter-method`, `--filter-namespace`), not VSTest `--filter`.
+- **Before every commit, run `dotnet format`** and include any resulting changes in the commit.
 - Both projects set `EnforceCodeStyleInBuild` and `AnalysisMode=Recommended`, so analyzer warnings (CA*) appear in normal builds.
 
 ## Target frameworks

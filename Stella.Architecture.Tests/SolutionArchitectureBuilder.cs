@@ -13,7 +13,7 @@ public sealed class SolutionArchitectureBuilder
 {
     private readonly List<Assembly> _assemblies;
     private readonly List<IAssemblyInSolutionArchitectureBuilder> _assemblyBuilders = [];
-  
+
     private SolutionArchitectureBuilder(IEnumerable<Assembly> assemblies)
     {
         _assemblies = assemblies.ToList();
@@ -62,7 +62,7 @@ public sealed class SolutionArchitectureBuilder
         {
             throw new ArgumentException($"Assembly {assembly.GetName().Name} was not provided in ForAssemblies", nameof(assembly));
         }
-        
+
         var builder = new AssemblyInSolutionArchitectureBuilder(assembly, AssemblyArchitectureBuilder.ForAssembly(assembly), _assemblies);
         configure(builder);
         _assemblyBuilders.Add(builder);
@@ -78,7 +78,7 @@ public sealed class SolutionArchitectureBuilder
     {
         int maxExceptions = 15;
         var exceptions = new List<Exception>(maxExceptions);
-        
+
 
         foreach (var builder in _assemblyBuilders)
         {

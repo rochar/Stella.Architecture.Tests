@@ -49,7 +49,7 @@ public class SolutionArchitectureBuilderTests
         // For this test, we need at least two assemblies in the solution.
         // We can use the current assembly and another one it depends on, or a dummy assembly.
         // The executing assembly depends on Stella.Architecture.Tests (the main project).
-        
+
         var mainAssembly = typeof(SolutionArchitectureBuilder).Assembly;
         var testAssembly = Assembly.GetExecutingAssembly();
 
