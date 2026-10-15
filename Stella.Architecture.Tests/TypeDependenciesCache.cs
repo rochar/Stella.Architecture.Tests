@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Reflection;
 
@@ -6,23 +7,18 @@ namespace Stella.Architecture.Tests;
 internal static class TypeDependenciesCache
 {
     private sealed record References(ImmutableHashSet<Type> Internal, ImmutableHashSet<Type> External);
-    private static readonly Dictionary<Type, References> _typeDependencies = [];
+    // Shared by every builder in the process, so concurrent tests read and fill it from many threads. A type may be
+    // built twice under contention, which is harmless: the build only reads reflection metadata.
+    private static readonly ConcurrentDictionary<Type, References> _typeDependencies = new();
 
-    internal static ImmutableHashSet<Type> GetInternalReferenceTypes(Type type)
-    {
-        EnsureTypeDependencies(type);
-        return _typeDependencies[type].Internal;
-    }
-    internal static ImmutableHashSet<Type> GetExternalReferenceTypes(Type type)
-    {
-        EnsureTypeDependencies(type);
-        return _typeDependencies[type].External;
-    }
-    private static void EnsureTypeDependencies(Type type)
-    {
-        if (_typeDependencies.ContainsKey(type))
-            return;
+    internal static ImmutableHashSet<Type> GetInternalReferenceTypes(Type type) =>
+        _typeDependencies.GetOrAdd(type, BuildReferences).Internal;
 
+    internal static ImmutableHashSet<Type> GetExternalReferenceTypes(Type type) =>
+        _typeDependencies.GetOrAdd(type, BuildReferences).External;
+
+    private static References BuildReferences(Type type)
+    {
         var assembly = type.Assembly;
 
         var referencedTypes = ImmutableHashSet.CreateBuilder<Type>();
@@ -92,12 +88,6 @@ internal static class TypeDependenciesCache
                     externalReferencedTypes.Add(parameter.ParameterType);
             }
         }
-        lock (_typeDependencies)
-        {
-            if (!_typeDependencies.ContainsKey(type))
-            {
-                _typeDependencies[type] = new References(referencedTypes.ToImmutable(), externalReferencedTypes.ToImmutable());
-            }
-        }
+        return new References(referencedTypes.ToImmutable(), externalReferencedTypes.ToImmutable());
     }
 }
