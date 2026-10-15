@@ -10,6 +10,7 @@ namespace Stella.Architecture.Tests.Tests;
 public class TypeDependenciesCacheConcurrencyTests
 {
     private const int WorkersPerAssembly = 4;
+    private static readonly TimeSpan JoinTimeout = TimeSpan.FromMinutes(1);
 
     [Fact]
     public void ShouldBeValidWhenAssembliesAreAnalysedInParallel()
@@ -47,13 +48,15 @@ public class TypeDependenciesCacheConcurrencyTests
                 {
                     errors.Add(exception);
                 }
-            }))
+            })
+            { IsBackground = true })
             .ToList();
 
         threads.ForEach(thread => thread.Start());
         start.Set();
-        threads.ForEach(thread => thread.Join());
 
+        // Bounded wait so a deadlock in the cache fails the test instead of hanging the run.
+        threads.ShouldAllBe(thread => thread.Join(JoinTimeout));
         errors.ShouldBeEmpty();
     }
 }
