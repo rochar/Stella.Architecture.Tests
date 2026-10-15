@@ -37,4 +37,4 @@ characters.
 
 ## Index
 
-_No plans yet._
+- PLAN-20261015-fix-type-cache-race — in-progress — Make TypeDependenciesCache safe for parallel test runs
